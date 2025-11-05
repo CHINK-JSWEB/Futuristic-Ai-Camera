@@ -57,12 +57,18 @@
   </div>
 
      <!-- In-app browser overlay -->
-<div id="open-external-overlay" style="display:none;">
+
+<div id="open-external-overlay">
   <div class="overlay-box">
-    <h2>Open in your browser for camera access</h2>
-    <p>To use the camera, open this page in your phone's browser (Chrome, Safari). Tap the button below:</p>
-    <button id="open-external-btn">Open in Browser</button>
-    <p class="small">If that doesn't work, tap the ⋯ menu in Messenger and choose “Open in browser”.</p>
+    <h2>📸 Open this camera in your browser</h2>
+    <p>Messenger blocks camera access. Please copy this link and open it in Chrome or Safari:</p>
+    
+    <div id="link-box" style="background:#000;padding:8px;border-radius:6px;color:#00f0ff;margin:8px 0;word-break:break-all;">
+      <span id="site-link">https://futuristic-ai-camera.onrender.com</span>
+    </div>
+
+    <button id="copy-link-btn">Copy Link</button>
+    <p class="small">Then paste it in your browser's address bar to continue.</p>
   </div>
 </div>
 
@@ -82,6 +88,57 @@
 
   <footer>© 2025 All rights reserved by Jonnel Soriano</footer>
 
-  <script src="script.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('open-external-overlay');
+    const linkText = document.getElementById('site-link');
+    const copyBtn = document.getElementById('copy-link-btn');
+    const isInApp = /FBAN|FBAV|Instagram|Messenger/i.test(navigator.userAgent);
+
+    if (isInApp) {
+      overlay.style.display = 'flex';
+      linkText.textContent = window.location.href;
+
+      // ✅ Copy link with toast animation
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+
+          const toast = document.createElement('div');
+          toast.id = 'copy-toast';
+          toast.textContent = '✅ Link copied!';
+          Object.assign(toast.style, {
+            position: 'fixed',
+            bottom: '30px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#00f0ff',
+            color: '#000',
+            padding: '10px 20px',
+            borderRadius: '10px',
+            fontWeight: 'bold',
+            boxShadow: '0 0 10px #ff00f0',
+            opacity: '0',
+            transition: 'opacity 0.3s',
+            zIndex: '9999'
+          });
+
+          document.body.appendChild(toast);
+          requestAnimationFrame(() => (toast.style.opacity = '1'));
+          setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+          }, 2000);
+        } catch (err) {
+          alert('Copy failed. Please copy manually.');
+        }
+      });
+    } else {
+      overlay.style.display = 'none';
+    }
+  });
+</script>
+
+  <script src="script.js" defer></script>
 </body>
 </html>

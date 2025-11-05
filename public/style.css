@@ -181,10 +181,11 @@ footer {
   width: 90%;
   background: linear-gradient(90deg,#00f0ff,#ff00f0);
   color: #000;
-  padding: 18px;
+  padding: 20px;
   border-radius: 12px;
   text-align: center;
   box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  line-height: 1.5;
 }
 #open-external-overlay button {
   margin-top: 12px;
@@ -200,4 +201,49 @@ footer {
   margin-top:10px;
   font-size:12px;
   color:#050523;
+}
+#link-box {
+  font-size: 13px;
+  text-align: center;
+  border: 1px solid #00f0ff;
+  background: rgba(0,0,0,0.7);
+  padding: 8px;
+  border-radius: 6px;
+  color: #00f0ff;
+  word-wrap: break-word;
+  margin: 10px 0;
+}
+
+#copy-link-btn {
+  background: #000;
+  border: 2px solid #00f0ff;
+  color: #00f0ff;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#copy-link-btn:hover {
+  background: #00f0ff;
+  color: #000;
+}
+#copy-toast {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #00f0ff;
+  color: #000;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 99999;
+}
+#copy-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-10px);
 }

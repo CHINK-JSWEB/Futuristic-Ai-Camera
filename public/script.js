@@ -57,27 +57,54 @@ function tryOpenInExternalBrowser() {
 // initialize detection and UI
 document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('open-external-overlay');
-  const btn = document.getElementById('open-external-btn');
 
   if (isInAppBrowser()) {
-    // show overlay to encourage opening in external browser
     overlay.style.display = 'flex';
-    // optional: autofocus to prompt user to tap
-    btn.focus();
 
-    btn.addEventListener('click', () => {
-      tryOpenInExternalBrowser();
-      // hide overlay after attempting open, keep a short delay so user sees it
-      setTimeout(()=>{ overlay.style.display = 'none'; }, 1000);
+    const linkText = document.getElementById('site-link');
+    const copyBtn = document.getElementById('copy-link-btn');
+    linkText.textContent = window.location.href;
+
+    // ✅ With toast animation
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+
+        // Toast animation
+        const toast = document.createElement('div');
+        toast.id = 'copy-toast';
+        toast.textContent = '✅ Link copied!';
+        Object.assign(toast.style, {
+          position: 'fixed',
+          bottom: '30px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#00f0ff',
+          color: '#000',
+          padding: '10px 20px',
+          borderRadius: '10px',
+          fontWeight: 'bold',
+          boxShadow: '0 0 10px #ff00f0',
+          opacity: '0',
+          transition: 'opacity 0.3s',
+          zIndex: '9999'
+        });
+
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => (toast.style.opacity = '1'));
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => toast.remove(), 300);
+        }, 2000);
+      } catch (err) {
+        alert('Copy failed, please copy manually.');
+      }
     });
   } else {
-    // not in-app browser: no overlay, start camera normally
     overlay.style.display = 'none';
-    // optionally auto start camera here if your flow needs it
-    // startCamera();
+    startCamera(); // auto-start camera sa normal browser
   }
 });
-
 // Start camera
 async function startCamera() {
   try {
