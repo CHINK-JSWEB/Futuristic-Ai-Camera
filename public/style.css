@@ -167,3 +167,37 @@ footer {
   font-size: 12px;
   text-align: center;
 }
+#open-external-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3,3,10,0.8);
+  z-index: 9999;
+}
+#open-external-overlay .overlay-box {
+  max-width: 420px;
+  width: 90%;
+  background: linear-gradient(90deg,#00f0ff,#ff00f0);
+  color: #000;
+  padding: 18px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+#open-external-overlay button {
+  margin-top: 12px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: #000;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+#open-external-overlay .small {
+  margin-top:10px;
+  font-size:12px;
+  color:#050523;
+}

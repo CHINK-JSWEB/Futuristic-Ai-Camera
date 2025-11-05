@@ -17,6 +17,67 @@ const openBrowser = document.getElementById("open-browser");
 let currentFilter = "none";
 let zoom = 1;
 
+// --- In-app browser detection & open-in-browser helper ---
+// returns true if likely in an in-app webview (Facebook, Instagram, Telegram, etc.)
+function isInAppBrowser() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  // common tokens for in-app browsers
+  const tokens = ['FBAN','FBAV','Messenger','Instagram','Instagram 2','Line','Snapchat','Twitter','Telegram','WhatsApp'];
+  for (const t of tokens) if (ua.indexOf(t) !== -1) return true;
+  // iOS webview detection (no standalone Safari)
+  if ((/iPhone|iPad|iPod/i).test(ua) && !/Safari/i.test(ua) && /Mobile/i.test(ua)) return true;
+  return false;
+}
+
+function tryOpenInExternalBrowser() {
+  const url = window.location.href;
+  // 1) Try Android intent (works on many Android devices to force Chrome)
+  if (/Android/i.test(navigator.userAgent)) {
+    try {
+      const intentUrl = `intent:${url}#Intent;package=com.android.chrome;scheme=https;end`;
+      window.location = intentUrl;
+      // if that fails, fallback to window.open after small delay
+      setTimeout(()=>{ window.open(url, '_blank'); }, 800);
+      return;
+    } catch(e) { /* fall through to fallback */ }
+  }
+
+  // 2) iOS/other: attempt to open with window.open('_blank')
+  try {
+    const newWindow = window.open(url, '_blank');
+    if (!newWindow) {
+      // popups blocked: show overlay instructions (we keep overlay shown)
+      console.warn('Popup blocked — please use the menu to open in browser.');
+    }
+  } catch(e) {
+    console.warn('Open external failed', e);
+  }
+}
+
+// initialize detection and UI
+document.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('open-external-overlay');
+  const btn = document.getElementById('open-external-btn');
+
+  if (isInAppBrowser()) {
+    // show overlay to encourage opening in external browser
+    overlay.style.display = 'flex';
+    // optional: autofocus to prompt user to tap
+    btn.focus();
+
+    btn.addEventListener('click', () => {
+      tryOpenInExternalBrowser();
+      // hide overlay after attempting open, keep a short delay so user sees it
+      setTimeout(()=>{ overlay.style.display = 'none'; }, 1000);
+    });
+  } else {
+    // not in-app browser: no overlay, start camera normally
+    overlay.style.display = 'none';
+    // optionally auto start camera here if your flow needs it
+    // startCamera();
+  }
+});
+
 // Start camera
 async function startCamera() {
   try {
