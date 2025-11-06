@@ -1,3 +1,6 @@
+/* ======================
+   GENERAL STYLES
+   ====================== */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -9,6 +12,15 @@ body {
   color: white;
 }
 
+footer {
+  margin-bottom: 10px;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ======================
+   OVERLAY STYLES
+   ====================== */
 .overlay-content {
   background: rgba(0,0,0,0.85);
   padding: 20px;
@@ -18,13 +30,17 @@ body {
 
 #overlay-message {
   position: fixed;
-  top:0; left:0; width:100%; height:100%;
+  top:0; left:0;
+  width:100%; height:100%;
   display: none;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
+/* ======================
+   CAMERA BOX
+   ====================== */
 .camera-box {
   position: relative;
   width: 90%;
@@ -44,8 +60,12 @@ video, #preview {
   height: 100%;
   object-fit: cover;
   border-radius: 15px;
+  transition: filter 0.3s ease; /* smooth filter transitions */
 }
 
+/* ======================
+   CAPTURE BUTTON
+   ====================== */
 #capture {
   position: absolute;
   bottom: 15px;
@@ -61,6 +81,9 @@ video, #preview {
   cursor: pointer;
 }
 
+/* ======================
+   FILTERS
+   ====================== */
 .filters {
   position: absolute;
   bottom: 90px;
@@ -88,15 +111,18 @@ video, #preview {
   color: #000;
 }
 
+/* Scrollbar for filters */
 .filters::-webkit-scrollbar {
   height: 6px;
 }
-
 .filters::-webkit-scrollbar-thumb {
   background: #ff00f0;
   border-radius: 3px;
 }
 
+/* ======================
+   CONTROLS (TIMER & ZOOM)
+   ====================== */
 .controls {
   position: absolute;
   top: 10px;
@@ -106,8 +132,14 @@ video, #preview {
   align-items: center;
 }
 
-#zoom-slider { width: 100px; }
+#zoom-slider {
+  width: 100px;
+  cursor: pointer;
+}
 
+/* ======================
+   GALLERY
+   ====================== */
 .gallery-container {
   width: 90%;
   max-width: 500px;
@@ -121,6 +153,12 @@ video, #preview {
   display: flex;
   gap: 5px;
   overflow-x: auto;
+  scrollbar-width: thin; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+#gallery::-webkit-scrollbar {
+  height: 6px;
 }
 
 #gallery img {
@@ -132,6 +170,9 @@ video, #preview {
   cursor: pointer;
 }
 
+/* ======================
+   ACTION BUTTONS
+   ====================== */
 .action-buttons {
   display: flex;
   gap: 10px;
@@ -149,6 +190,9 @@ video, #preview {
   font-weight: bold;
 }
 
+/* ======================
+   SAVE / DISCARD TOAST
+   ====================== */
 #save-confirmation, #discard-confirmation {
   position: fixed;
   bottom: 20px;
@@ -162,73 +206,59 @@ video, #preview {
   font-weight: bold;
 }
 
-footer {
-  margin-bottom: 10px;
-  font-size: 12px;
-  text-align: center;
-}
-#open-external-overlay {
+/* ======================
+   IN-APP BROWSER OVERLAY
+   ====================== */
+#in-app-bottom-overlay {
   position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(3,3,10,0.8);
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 420px;
   z-index: 9999;
 }
-#open-external-overlay .overlay-box {
-  max-width: 420px;
-  width: 90%;
-  background: linear-gradient(90deg,#00f0ff,#ff00f0);
-  color: #000;
-  padding: 20px;
+
+#in-app-bottom-overlay .overlay-box {
+  background: rgba(0,0,0,0.7);
+  color: #00f0ff;
+  padding: 12px 16px;
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-  line-height: 1.5;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
-#open-external-overlay button {
-  margin-top: 12px;
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: none;
-  background: #000;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-}
-#open-external-overlay .small {
-  margin-top:10px;
-  font-size:12px;
-  color:#050523;
-}
+
 #link-box {
   font-size: 13px;
+  background: #000;
+  color: #00f0ff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  margin: 8px 0;
+  word-break: break-word;
   text-align: center;
   border: 1px solid #00f0ff;
-  background: rgba(0,0,0,0.7);
-  padding: 8px;
-  border-radius: 6px;
-  color: #00f0ff;
-  word-wrap: break-word;
-  margin: 10px 0;
 }
 
 #copy-link-btn {
-  background: #000;
-  border: 2px solid #00f0ff;
-  color: #00f0ff;
-  font-weight: bold;
   padding: 8px 16px;
   border-radius: 8px;
+  border: none;
+  background: #00f0ff;
+  color: #000;
+  font-weight: bold;
   cursor: pointer;
   transition: 0.2s;
 }
 
 #copy-link-btn:hover {
-  background: #00f0ff;
-  color: #000;
+  background: #ff00f0;
+  color: #fff;
 }
+
+/* ======================
+   COPY LINK TOAST
+   ====================== */
 #copy-toast {
   position: fixed;
   bottom: 60px;
@@ -243,6 +273,7 @@ footer {
   transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 99999;
 }
+
 #copy-toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(-10px);

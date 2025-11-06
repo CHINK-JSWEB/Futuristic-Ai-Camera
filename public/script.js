@@ -1,3 +1,4 @@
+// DOM Elements
 const video = document.getElementById("camera");
 const canvas = document.getElementById("canvas");
 const preview = document.getElementById("preview");
@@ -13,99 +14,23 @@ const filters = document.querySelectorAll(".filter-btn");
 const gallery = document.getElementById("gallery");
 const overlayMessage = document.getElementById("overlay-message");
 const openBrowser = document.getElementById("open-browser");
+const overlay = document.getElementById("open-external-overlay");
+const linkText = document.getElementById("site-link");
+const copyBtn = document.getElementById("copy-link-btn");
 
 let currentFilter = "none";
 let zoom = 1;
 
-// --- In-app browser detection & open-in-browser helper ---
-// returns true if likely in an in-app webview (Facebook, Instagram, Telegram, etc.)
+// --- In-app browser detection ---
 function isInAppBrowser() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
-  // common tokens for in-app browsers
-  const tokens = ['FBAN','FBAV','Messenger','Instagram','Instagram 2','Line','Snapchat','Twitter','Telegram','WhatsApp'];
+  const tokens = ['FBAN','FBAV','Messenger','Instagram','Line','Snapchat','Twitter','Telegram','WhatsApp'];
   for (const t of tokens) if (ua.indexOf(t) !== -1) return true;
-  // iOS webview detection (no standalone Safari)
   if ((/iPhone|iPad|iPod/i).test(ua) && !/Safari/i.test(ua) && /Mobile/i.test(ua)) return true;
   return false;
 }
 
-function tryOpenInExternalBrowser() {
-  const url = window.location.href;
-  // 1) Try Android intent (works on many Android devices to force Chrome)
-  if (/Android/i.test(navigator.userAgent)) {
-    try {
-      const intentUrl = `intent:${url}#Intent;package=com.android.chrome;scheme=https;end`;
-      window.location = intentUrl;
-      // if that fails, fallback to window.open after small delay
-      setTimeout(()=>{ window.open(url, '_blank'); }, 800);
-      return;
-    } catch(e) { /* fall through to fallback */ }
-  }
-
-  // 2) iOS/other: attempt to open with window.open('_blank')
-  try {
-    const newWindow = window.open(url, '_blank');
-    if (!newWindow) {
-      // popups blocked: show overlay instructions (we keep overlay shown)
-      console.warn('Popup blocked — please use the menu to open in browser.');
-    }
-  } catch(e) {
-    console.warn('Open external failed', e);
-  }
-}
-
-// initialize detection and UI
-document.addEventListener('DOMContentLoaded', () => {
-  const overlay = document.getElementById('open-external-overlay');
-
-  if (isInAppBrowser()) {
-    overlay.style.display = 'flex';
-
-    const linkText = document.getElementById('site-link');
-    const copyBtn = document.getElementById('copy-link-btn');
-    linkText.textContent = window.location.href;
-
-    // ✅ With toast animation
-    copyBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-
-        // Toast animation
-        const toast = document.createElement('div');
-        toast.id = 'copy-toast';
-        toast.textContent = '✅ Link copied!';
-        Object.assign(toast.style, {
-          position: 'fixed',
-          bottom: '30px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: '#00f0ff',
-          color: '#000',
-          padding: '10px 20px',
-          borderRadius: '10px',
-          fontWeight: 'bold',
-          boxShadow: '0 0 10px #ff00f0',
-          opacity: '0',
-          transition: 'opacity 0.3s',
-          zIndex: '9999'
-        });
-
-        document.body.appendChild(toast);
-        requestAnimationFrame(() => (toast.style.opacity = '1'));
-        setTimeout(() => {
-          toast.style.opacity = '0';
-          setTimeout(() => toast.remove(), 300);
-        }, 2000);
-      } catch (err) {
-        alert('Copy failed, please copy manually.');
-      }
-    });
-  } else {
-    overlay.style.display = 'none';
-    startCamera(); // auto-start camera sa normal browser
-  }
-});
-// Start camera
+// --- Start camera ---
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -116,13 +41,13 @@ async function startCamera() {
   }
 }
 
-// Open camera from overlay
+// --- Open camera from overlay ---
 openBrowser.addEventListener("click", () => {
   overlayMessage.style.display = "none";
   startCamera();
 });
 
-// Filter selection
+// --- Filters ---
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
     currentFilter = btn.dataset.filter;
@@ -130,13 +55,13 @@ filters.forEach(btn => {
   });
 });
 
-// Zoom control
+// --- Zoom ---
 zoomSlider.addEventListener("input", () => {
   zoom = zoomSlider.value;
   video.style.transform = `scale(${zoom})`;
 });
 
-// Timer function
+// --- Timer ---
 function startTimer(seconds) {
   let count = seconds;
   const timerOverlay = document.createElement("div");
@@ -162,11 +87,10 @@ function startTimer(seconds) {
   }, 1000);
 }
 
-// Timer buttons
 timer3.addEventListener("click", () => startTimer(3));
 timer5.addEventListener("click", () => startTimer(5));
 
-// Capture photo
+// --- Capture photo ---
 captureBtn.addEventListener("click", () => takePhoto());
 
 function takePhoto() {
@@ -178,11 +102,11 @@ function takePhoto() {
 
   preview.src = canvas.toDataURL("image/png");
   preview.hidden = false;
-
   saveBtn.disabled = false;
   discardBtn.disabled = false;
 
-  // Auto-send to Telegram
+  // Auto-upload placeholder (implement your server endpoint)
+  /*
   canvas.toBlob(async (blob) => {
     const formData = new FormData();
     formData.append("photo", blob, "snapshot.png");
@@ -192,9 +116,10 @@ function takePhoto() {
       console.error(err);
     }
   });
+  */
 }
 
-// Save photo
+// --- Save photo ---
 saveBtn.addEventListener("click", () => {
   const link = document.createElement("a");
   link.href = preview.src;
@@ -215,7 +140,7 @@ saveBtn.addEventListener("click", () => {
   discardBtn.disabled = true;
 });
 
-// Discard photo
+// --- Discard photo ---
 discardBtn.addEventListener("click", () => {
   preview.hidden = true;
   saveBtn.disabled = true;
@@ -223,13 +148,13 @@ discardBtn.addEventListener("click", () => {
   showFloating(discardConfirm);
 });
 
-// Floating confirmation popup
+// --- Floating confirmation ---
 function showFloating(el) {
   el.style.display = "block";
   setTimeout(() => { el.style.display = "none"; }, 2000);
 }
 
-// Click thumbnail to preview
+// --- Click thumbnail to preview ---
 gallery.addEventListener("click", (e) => {
   if (e.target.tagName === "IMG") {
     preview.src = e.target.src;
@@ -239,55 +164,72 @@ gallery.addEventListener("click", (e) => {
   }
 });
 
-// Initialize camera automatically if HTTPS or localhost
-if (location.protocol === "https:" || location.hostname === "localhost") {
-  startCamera();
-}
+// --- In-app browser overlay ---
+document.addEventListener('DOMContentLoaded', () => {
+  if (isInAppBrowser()) {
+    overlay.style.display = 'flex';
+    linkText.textContent = window.location.href;
 
-// Scrollable filters
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        const toast = document.createElement('div');
+        toast.id = 'copy-toast';
+        toast.textContent = '✅ Link copied!';
+        Object.assign(toast.style, {
+          position: 'fixed',
+          bottom: '30px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#00f0ff',
+          color: '#000',
+          padding: '10px 20px',
+          borderRadius: '10px',
+          fontWeight: 'bold',
+          boxShadow: '0 0 10px #ff00f0',
+          opacity: '0',
+          transition: 'opacity 0.3s',
+          zIndex: '9999'
+        });
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => (toast.style.opacity = '1'));
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => toast.remove(), 300);
+        }, 2000);
+      } catch (err) {
+        alert('Copy failed, please copy manually.');
+      }
+    });
+  } else {
+    overlay.style.display = 'none';
+    startCamera();
+  }
+});
+
+// --- Filters scrollable support ---
 const slider = document.querySelector(".filter-container");
-let isDown = false;
-let startX;
-let scrollLeft;
+let isDown = false, startX, scrollLeft;
 
 slider.addEventListener("mousedown", (e) => {
-  isDown = true;
-  slider.classList.add("active");
+  isDown = true; slider.classList.add("active");
   startX = e.pageX - slider.offsetLeft;
   scrollLeft = slider.scrollLeft;
 });
-
-slider.addEventListener("mouseleave", () => {
-  isDown = false;
-  slider.classList.remove("active");
-});
-
-slider.addEventListener("mouseup", () => {
-  isDown = false;
-  slider.classList.remove("active");
-});
-
+slider.addEventListener("mouseleave", () => { isDown = false; slider.classList.remove("active"); });
+slider.addEventListener("mouseup", () => { isDown = false; slider.classList.remove("active"); });
 slider.addEventListener("mousemove", (e) => {
-  if (!isDown) return;
+  if(!isDown) return;
   e.preventDefault();
   const x = e.pageX - slider.offsetLeft;
-  const walk = (x - startX) * 2; // Scroll speed
+  const walk = (x - startX) * 2;
   slider.scrollLeft = scrollLeft - walk;
 });
-
 // Touch support
-slider.addEventListener("touchstart", (e) => {
-  isDown = true;
-  startX = e.touches[0].pageX - slider.offsetLeft;
-  scrollLeft = slider.scrollLeft;
-});
-
-slider.addEventListener("touchend", () => {
-  isDown = false;
-});
-
+slider.addEventListener("touchstart", (e) => { isDown = true; startX = e.touches[0].pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+slider.addEventListener("touchend", () => { isDown = false; });
 slider.addEventListener("touchmove", (e) => {
-  if (!isDown) return;
+  if(!isDown) return;
   const x = e.touches[0].pageX - slider.offsetLeft;
   const walk = (x - startX) * 2;
   slider.scrollLeft = scrollLeft - walk;
