@@ -11,40 +11,122 @@ const saveConfirm = document.getElementById("save-confirmation");
 const discardConfirm = document.getElementById("discard-confirmation");
 const filters = document.querySelectorAll(".filter-btn");
 const gallery = document.getElementById("gallery");
-const overlayMessage = document.getElementById("overlay-message");
-const openBrowser = document.getElementById("open-browser");
+
+// Floating button & overlay
+const floatingBtn = document.getElementById("floating-guide-btn");
+const overlay = document.getElementById("open-external-overlay");
+const closeOverlayBtn = document.getElementById("close-overlay-btn");
+const copyLinkBtn = document.getElementById("copy-link-btn");
+const linkText = document.getElementById("site-link");
 
 let currentFilter = "none";
 let zoom = 1;
 
-// Detect if in-app browser
-function isInAppBrowser() {
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  const tokens = ['FBAN','FBAV','Messenger','Instagram','Instagram 2','Line','Snapchat','Twitter','Telegram','WhatsApp'];
-  for (const t of tokens) if (ua.indexOf(t) !== -1) return true;
-  if ((/iPhone|iPad|iPod/i).test(ua) && !/Safari/i.test(ua) && /Mobile/i.test(ua)) return true;
-  return false;
+// ========== FLOATING BUTTON DRAGGABLE ==========
+let isDragging = false;
+let offsetX, offsetY;
+
+floatingBtn.addEventListener("mousedown", startDrag);
+floatingBtn.addEventListener("touchstart", startDrag);
+
+function startDrag(e) {
+  isDragging = true;
+  const touch = e.touches ? e.touches[0] : e;
+  const rect = floatingBtn.getBoundingClientRect();
+  offsetX = touch.clientX - rect.left;
+  offsetY = touch.clientY - rect.top;
+  
+  document.addEventListener("mousemove", onDrag);
+  document.addEventListener("touchmove", onDrag);
+  document.addEventListener("mouseup", stopDrag);
+  document.addEventListener("touchend", stopDrag);
 }
 
-// Start camera
+function onDrag(e) {
+  if (!isDragging) return;
+  e.preventDefault();
+  const touch = e.touches ? e.touches[0] : e;
+  
+  let x = touch.clientX - offsetX;
+  let y = touch.clientY - offsetY;
+  
+  // Keep within screen bounds
+  const maxX = window.innerWidth - floatingBtn.offsetWidth;
+  const maxY = window.innerHeight - floatingBtn.offsetHeight;
+  
+  x = Math.max(0, Math.min(x, maxX));
+  y = Math.max(0, Math.min(y, maxY));
+  
+  floatingBtn.style.left = x + "px";
+  floatingBtn.style.top = y + "px";
+  floatingBtn.style.right = "auto";
+  floatingBtn.style.bottom = "auto";
+}
+
+function stopDrag() {
+  isDragging = false;
+  document.removeEventListener("mousemove", onDrag);
+  document.removeEventListener("touchmove", onDrag);
+  document.removeEventListener("mouseup", stopDrag);
+  document.removeEventListener("touchend", stopDrag);
+}
+
+// ========== SHOW/HIDE OVERLAY ==========
+floatingBtn.addEventListener("click", (e) => {
+  if (!isDragging) {
+    overlay.classList.add("show");
+    linkText.textContent = window.location.href;
+  }
+});
+
+closeOverlayBtn.addEventListener("click", () => {
+  overlay.classList.remove("show");
+});
+
+// Close overlay when clicking outside
+overlay.addEventListener("click", (e) => {
+  if (e.target === overlay) {
+    overlay.classList.remove("show");
+  }
+});
+
+// ========== COPY LINK ==========
+copyLinkBtn.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    
+    const toast = document.createElement("div");
+    toast.id = "copy-toast";
+    toast.textContent = "✅ Link copied!";
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add("show"), 10);
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 300);
+    }, 2000);
+  } catch (err) {
+    alert("Copy failed. Please copy manually.");
+  }
+});
+
+// ========== START CAMERA ==========
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     video.srcObject = stream;
-    await video.play(); // ✅ Ensure camera starts
+    await video.play();
   } catch (err) {
     console.error("Camera error:", err);
-    overlayMessage.style.display = "flex";
   }
 }
 
-// Open camera from overlay
-openBrowser?.addEventListener("click", () => {
-  overlayMessage.style.display = "none";
+// Auto-start camera
+if (location.protocol === "https:" || location.hostname === "localhost") {
   startCamera();
-});
+}
 
-// Filters
+// ========== FILTERS ==========
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
     currentFilter = btn.dataset.filter;
@@ -52,13 +134,13 @@ filters.forEach(btn => {
   });
 });
 
-// Zoom
+// ========== ZOOM ==========
 zoomSlider?.addEventListener("input", () => {
   zoom = zoomSlider.value;
   video.style.transform = `scale(${zoom})`;
 });
 
-// Timer capture
+// ========== TIMER CAPTURE ==========
 function startTimer(seconds) {
   let count = seconds;
   const timerOverlay = document.createElement("div");
@@ -87,7 +169,7 @@ function startTimer(seconds) {
 timer3?.addEventListener("click", () => startTimer(3));
 timer5?.addEventListener("click", () => startTimer(5));
 
-// Capture photo
+// ========== CAPTURE PHOTO ==========
 captureBtn?.addEventListener("click", () => takePhoto());
 
 function takePhoto() {
@@ -117,7 +199,7 @@ function takePhoto() {
   });
 }
 
-// Save
+// ========== SAVE ==========
 saveBtn?.addEventListener("click", () => {
   const link = document.createElement("a");
   link.href = preview.src;
@@ -128,7 +210,6 @@ saveBtn?.addEventListener("click", () => {
 
   showFloating(saveConfirm);
 
-  // Add thumbnail to gallery
   const thumb = document.createElement("img");
   thumb.src = preview.src;
   gallery.appendChild(thumb);
@@ -138,7 +219,7 @@ saveBtn?.addEventListener("click", () => {
   discardBtn.disabled = true;
 });
 
-// Discard
+// ========== DISCARD ==========
 discardBtn?.addEventListener("click", () => {
   preview.hidden = true;
   saveBtn.disabled = true;
@@ -146,13 +227,13 @@ discardBtn?.addEventListener("click", () => {
   showFloating(discardConfirm);
 });
 
-// Floating notification
+// ========== FLOATING NOTIFICATION ==========
 function showFloating(el) {
   el.style.display = "block";
   setTimeout(() => { el.style.display = "none"; }, 2000);
 }
 
-// Click thumbnail to preview
+// ========== GALLERY THUMBNAIL CLICK ==========
 gallery?.addEventListener("click", (e) => {
   if (e.target.tagName === "IMG") {
     preview.src = e.target.src;
@@ -162,12 +243,7 @@ gallery?.addEventListener("click", (e) => {
   }
 });
 
-// Auto-start camera if HTTPS or localhost
-if (location.protocol === "https:" || location.hostname === "localhost") {
-  startCamera();
-}
-
-// Scrollable filters
+// ========== SCROLLABLE FILTERS ==========
 const slider = document.querySelector(".filter-container");
 if (slider) {
   let isDown = false;

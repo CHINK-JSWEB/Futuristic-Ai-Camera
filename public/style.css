@@ -9,22 +9,6 @@ align-items: center;
 color: white;
 }
 
-.overlay-content {
-background: rgba(0,0,0,0.85);
-padding: 20px;
-border-radius: 15px;
-text-align: center;
-}
-
-#overlay-message {
-position: fixed;
-top:0; left:0; width:100%; height:100%;
-display: none;
-justify-content: center;
-align-items: center;
-z-index: 1000;
-}
-
 .camera-box {
 position: relative;
 width: 90%;
@@ -167,27 +151,85 @@ margin-bottom: 10px;
 font-size: 12px;
 text-align: center;
 }
-#open-external-overlay {
+
+/* Floating Draggable Guide Button (Always Visible) */
+#floating-guide-btn {
 position: fixed;
-inset: 0;
+bottom: 100px;
+right: 20px;
+width: 60px;
+height: 60px;
+background: linear-gradient(135deg, #00f0ff, #ff00f0);
+border-radius: 50%;
 display: flex;
 align-items: center;
 justify-content: center;
-background: rgba(3,3,10,0.8);
+font-size: 28px;
+cursor: grab;
+box-shadow: 0 4px 15px rgba(0,240,255,0.6);
+z-index: 9998;
+transition: transform 0.2s;
+user-select: none;
+touch-action: none;
+}
+
+#floating-guide-btn:active {
+cursor: grabbing;
+transform: scale(0.95);
+}
+
+#floating-guide-btn:hover {
+box-shadow: 0 6px 20px rgba(255,0,240,0.8);
+}
+
+/* Overlay (Hidden by Default) */
+#open-external-overlay {
+position: fixed;
+inset: 0;
+display: none;
+align-items: center;
+justify-content: center;
+background: rgba(3,3,10,0.9);
 z-index: 9999;
 }
+
+#open-external-overlay.show {
+display: flex;
+}
+
 #open-external-overlay .overlay-box {
+position: relative;
 max-width: 420px;
 width: 90%;
-background: linear-gradient(90deg,#00f0ff,#ff00f0);
+background: linear-gradient(135deg,#00f0ff,#ff00f0);
 color: #000;
-padding: 20px;
-border-radius: 12px;
+padding: 25px;
+border-radius: 15px;
 text-align: center;
-box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-line-height: 1.5;
+box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+line-height: 1.6;
 }
-#open-external-overlay button {
+
+#close-overlay-btn {
+position: absolute;
+top: 10px;
+right: 10px;
+background: rgba(0,0,0,0.7);
+color: #fff;
+border: none;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+cursor: pointer;
+font-size: 16px;
+font-weight: bold;
+}
+
+#close-overlay-btn:hover {
+background: #000;
+}
+
+#open-external-overlay button:not(#close-overlay-btn) {
 margin-top: 12px;
 padding: 10px 16px;
 border-radius: 10px;
@@ -197,21 +239,23 @@ color: #fff;
 font-weight: bold;
 cursor: pointer;
 }
+
 #open-external-overlay .small {
 margin-top:10px;
 font-size:12px;
 color:#050523;
 }
+
 #link-box {
 font-size: 13px;
 text-align: center;
-border: 1px solid #00f0ff;
-background: rgba(0,0,0,0.7);
-padding: 8px;
-border-radius: 6px;
+border: 1px solid #000;
+background: rgba(0,0,0,0.8);
+padding: 10px;
+border-radius: 8px;
 color: #00f0ff;
 word-wrap: break-word;
-margin: 10px 0;
+margin: 12px 0;
 }
 
 #copy-link-btn {
@@ -219,7 +263,7 @@ background: #000;
 border: 2px solid #00f0ff;
 color: #00f0ff;
 font-weight: bold;
-padding: 8px 16px;
+padding: 10px 18px;
 border-radius: 8px;
 cursor: pointer;
 transition: 0.2s;
@@ -229,6 +273,7 @@ transition: 0.2s;
 background: #00f0ff;
 color: #000;
 }
+
 #copy-toast {
 position: fixed;
 bottom: 60px;
@@ -236,14 +281,15 @@ left: 50%;
 transform: translateX(-50%);
 background: #00f0ff;
 color: #000;
-padding: 8px 16px;
+padding: 10px 20px;
 border-radius: 20px;
 font-weight: bold;
 opacity: 0;
-transition: opacity 0.3s ease, transform 0.3s ease;
+transition: opacity 0.3s ease;
 z-index: 99999;
+pointer-events: none;
 }
+
 #copy-toast.show {
 opacity: 1;
-transform: translateX(-50%) translateY(-10px);
 }

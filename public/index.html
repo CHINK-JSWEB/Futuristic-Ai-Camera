@@ -1,118 +1,88 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-  <meta charset="UTF-8">  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-  <title>Camera App by Jonnel Soriano</title>  
-  <link rel="stylesheet" href="style.css">    <!-- Open Graph / Social Media Preview -->    <meta property="og:title" content="Camera App by Jonnel Soriano">  
-  <meta property="og:description" content="Take selfies, apply filters, and save instantly!">  
-  <meta property="og:image" content="https://futuristic-ai-camera.onrender.com/banner.jpg">  
-  <meta property="og:url" content="https://futuristic-ai-camera.onrender.com">  
-  <meta property="og:type" content="website">    <!-- Twitter Card -->    <meta name="twitter:card" content="summary_large_image">  
-  <meta name="twitter:title" content="Camera App by Jonnel Soriano">  
-  <meta name="twitter:description" content="Take selfies, apply filters, and save instantly!">  
-  <meta name="twitter:image" content="https://futuristic-ai-camera.onrender.com/banner.jpg">  
-</head>  
-<body>  
-  <!-- Overlay for browser permission -->  
-  <div id="overlay-message">  
-    <div class="overlay-content">  
-      <h2>🚨 Please open this page in your browser</h2>  
-      <p>Click the button below to start the camera.</p>  
-      <button id="open-browser">Open Camera</button>  
-    </div>  
-  </div>    <!-- Camera Preview Box -->    <div class="camera-box">  
-    <video id="camera" autoplay playsinline></video>  
-    <img id="preview" hidden />  
-    <!-- Capture Button -->  
-    <button id="capture">📷</button>  <!-- Filters Scrollable -->  
-<div class="filter-container filters">  
-  <button class="filter-btn" data-filter="none">Normal</button>  
-  <button class="filter-btn" data-filter="grayscale(100%)">Grayscale</button>  
-  <button class="filter-btn" data-filter="sepia(100%)">Sepia</button>  
-  <button class="filter-btn" data-filter="brightness(1.3)">Bright</button>  
-  <button class="filter-btn" data-filter="contrast(1.5)">Contrast</button>  
-  <button class="filter-btn" data-filter="invert(100%)">Invert</button>  
-  <button class="filter-btn" data-filter="saturate(2)">Saturate</button>  
-  <button class="filter-btn" data-filter="hue-rotate(90deg)">Hue Rotate</button>  
-</div>  
-
-<!-- Timer & Zoom Controls -->  
-<div class="controls">  
-  <button id="timer-3">3s</button>  
-  <button id="timer-5">5s</button>  
-  <input type="range" id="zoom-slider" min="1" max="2" step="0.01" value="1">  
-</div>
-
-  </div>  <!-- In-app browser overlay -->
-
-<div id="open-external-overlay">  
-  <div class="overlay-box">  
-    <h2>📸 Open this camera in your browser</h2>  
-    <p>Messenger blocks camera access. Please copy this link and open it in Chrome or Safari:</p>  <div id="link-box" style="background:#000;padding:8px;border-radius:6px;color:#00f0ff;margin:8px 0;word-break:break-all;">  
-  <span id="site-link">https://futuristic-ai-camera.onrender.com</span>  
-</div>  
-
-<button id="copy-link-btn">Copy Link</button>  
-<p class="small">Then paste it in your browser's address bar to continue.</p>
-
-  </div>  
-</div>    <!-- Gallery Box -->    <div class="gallery-container">  
-    <div id="gallery"></div>  
-    <div class="action-buttons">  
-      <button id="save">Save</button>  
-      <button id="discard">Discard</button>  
-    </div>  
-  </div>  <canvas id="canvas" hidden></canvas>
-
-  <div id="save-confirmation">✅ Photo Saved!</div>  
-  <div id="discard-confirmation">❌ Photo Discarded!</div>    <footer>© 2025 All rights reserved by Jonnel Soriano</footer>  <script>  
-  document.addEventListener('DOMContentLoaded', () => {  
-    const overlay = document.getElementById('open-external-overlay');  
-    const linkText = document.getElementById('site-link');  
-    const copyBtn = document.getElementById('copy-link-btn');  
-    const isInApp = /FBAN|FBAV|Instagram|Messenger/i.test(navigator.userAgent);  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera App by Jonnel Soriano</title>
+  <link rel="stylesheet" href="style.css">
   
-    if (isInApp) {  
-      overlay.style.display = 'flex';  
-      linkText.textContent = window.location.href;  
+  <!-- Open Graph / Social Media Preview -->
+  <meta property="og:title" content="Camera App by Jonnel Soriano">
+  <meta property="og:description" content="Take selfies, apply filters, and save instantly!">
+  <meta property="og:image" content="https://futuristic-ai-camera.onrender.com/banner.jpg">
+  <meta property="og:url" content="https://futuristic-ai-camera.onrender.com">
+  <meta property="og:type" content="website">
   
-      // ✅ Copy link with toast animation  
-      copyBtn.addEventListener('click', async () => {  
-        try {  
-          await navigator.clipboard.writeText(window.location.href);  
-  
-          const toast = document.createElement('div');  
-          toast.id = 'copy-toast';  
-          toast.textContent = '✅ Link copied!';  
-          Object.assign(toast.style, {  
-            position: 'fixed',  
-            bottom: '30px',  
-            left: '50%',  
-            transform: 'translateX(-50%)',  
-            background: '#00f0ff',  
-            color: '#000',  
-            padding: '10px 20px',  
-            borderRadius: '10px',  
-            fontWeight: 'bold',  
-            boxShadow: '0 0 10px #ff00f0',  
-            opacity: '0',  
-            transition: 'opacity 0.3s',  
-            zIndex: '9999'  
-          });  
-  
-          document.body.appendChild(toast);  
-          requestAnimationFrame(() => (toast.style.opacity = '1'));  
-          setTimeout(() => {  
-            toast.style.opacity = '0';  
-            setTimeout(() => toast.remove(), 300);  
-          }, 2000);  
-        } catch (err) {  
-          alert('Copy failed. Please copy manually.');  
-        }  
-      });  
-    } else {  
-      overlay.style.display = 'none';  
-    }  
-  });  
-</script>    <script src="script.js" defer></script>  </body>  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Camera App by Jonnel Soriano">
+  <meta name="twitter:description" content="Take selfies, apply filters, and save instantly!">
+  <meta name="twitter:image" content="https://futuristic-ai-camera.onrender.com/banner.jpg">
+</head>
+<body>
+
+  <!-- Floating Draggable Guide Button (Always Visible) -->
+  <div id="floating-guide-btn">
+    <span>❓</span>
+  </div>
+
+  <!-- Overlay for guide (Hidden by default, shows on button click) -->
+  <div id="open-external-overlay">
+    <div class="overlay-box">
+      <button id="close-overlay-btn">✖</button>
+      <h2>📸 Open this camera in your browser</h2>
+      <p>Messenger blocks camera access. Please copy this link and open it in Chrome or Safari:</p>
+      <div id="link-box">
+        <span id="site-link">https://futuristic-ai-camera.onrender.com</span>
+      </div>
+      <button id="copy-link-btn">Copy Link</button>
+      <p class="small">Then paste it in your browser's address bar to continue.</p>
+    </div>
+  </div>
+
+  <!-- Camera Preview Box -->
+  <div class="camera-box">
+    <video id="camera" autoplay playsinline></video>
+    <img id="preview" hidden />
+    
+    <!-- Capture Button -->
+    <button id="capture">📷</button>
+
+    <!-- Filters Scrollable -->
+    <div class="filter-container filters">
+      <button class="filter-btn" data-filter="none">Normal</button>
+      <button class="filter-btn" data-filter="grayscale(100%)">Grayscale</button>
+      <button class="filter-btn" data-filter="sepia(100%)">Sepia</button>
+      <button class="filter-btn" data-filter="brightness(1.3)">Bright</button>
+      <button class="filter-btn" data-filter="contrast(1.5)">Contrast</button>
+      <button class="filter-btn" data-filter="invert(100%)">Invert</button>
+      <button class="filter-btn" data-filter="saturate(2)">Saturate</button>
+      <button class="filter-btn" data-filter="hue-rotate(90deg)">Hue Rotate</button>
+    </div>
+
+    <!-- Timer & Zoom Controls -->
+    <div class="controls">
+      <button id="timer-3">3s</button>
+      <button id="timer-5">5s</button>
+      <input type="range" id="zoom-slider" min="1" max="2" step="0.01" value="1">
+    </div>
+  </div>
+
+  <!-- Gallery Box -->
+  <div class="gallery-container">
+    <div id="gallery"></div>
+    <div class="action-buttons">
+      <button id="save">Save</button>
+      <button id="discard">Discard</button>
+    </div>
+  </div>
+
+  <canvas id="canvas" hidden></canvas>
+  <div id="save-confirmation">✅ Photo Saved!</div>
+  <div id="discard-confirmation">❌ Photo Discarded!</div>
+
+  <footer>© 2025 All rights reserved by Jonnel Soriano</footer>
+
+  <script src="script.js" defer></script>
+</body>
 </html>
