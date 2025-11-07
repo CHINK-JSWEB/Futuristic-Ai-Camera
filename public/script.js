@@ -1,9 +1,6 @@
 const video = document.getElementById("camera");
 const canvas = document.getElementById("canvas");
-const preview = document.getElementById("preview");
 const captureBtn = document.getElementById("capture");
-const saveBtn = document.getElementById("save");
-const discardBtn = document.getElementById("discard");
 const zoomSlider = document.getElementById("zoom-slider");
 const timer3 = document.getElementById("timer-3");
 const timer5 = document.getElementById("timer-5");
@@ -11,6 +8,13 @@ const saveConfirm = document.getElementById("save-confirmation");
 const discardConfirm = document.getElementById("discard-confirmation");
 const filters = document.querySelectorAll(".filter-btn");
 const gallery = document.getElementById("gallery");
+const galleryThumbnail = document.getElementById("gallery-thumbnail-box");
+
+// Modal elements
+const photoModal = document.getElementById("photo-preview-modal");
+const modalPreviewImage = document.getElementById("modal-preview-image");
+const modalSaveBtn = document.getElementById("modal-save-btn");
+const modalDiscardBtn = document.getElementById("modal-discard-btn");
 
 // Floating button & overlay
 const floatingBtn = document.getElementById("floating-guide-btn");
@@ -21,6 +25,8 @@ const linkText = document.getElementById("site-link");
 
 let currentFilter = "none";
 let zoom = 1;
+let currentPhotoData = null;
+let photoCount = 0;
 
 // ========== FLOATING BUTTON DRAGGABLE ==========
 let isDragging = false;
@@ -50,7 +56,6 @@ function onDrag(e) {
   let x = touch.clientX - offsetX;
   let y = touch.clientY - offsetY;
   
-  // Keep within screen bounds
   const maxX = window.innerWidth - floatingBtn.offsetWidth;
   const maxY = window.innerHeight - floatingBtn.offsetHeight;
   
@@ -83,7 +88,6 @@ closeOverlayBtn.addEventListener("click", () => {
   overlay.classList.remove("show");
 });
 
-// Close overlay when clicking outside
 overlay.addEventListener("click", (e) => {
   if (e.target === overlay) {
     overlay.classList.remove("show");
@@ -121,7 +125,6 @@ async function startCamera() {
   }
 }
 
-// Auto-start camera
 if (location.protocol === "https:" || location.hostname === "localhost") {
   startCamera();
 }
@@ -180,11 +183,11 @@ function takePhoto() {
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   const dataUrl = canvas.toDataURL("image/png");
-  preview.src = dataUrl;
-  preview.hidden = false;
+  currentPhotoData = dataUrl;
 
-  saveBtn.disabled = false;
-  discardBtn.disabled = false;
+  // Show modal with preview
+  modalPreviewImage.src = dataUrl;
+  photoModal.classList.add("show");
 
   // Auto-upload to Telegram
   canvas.toBlob(async (blob) => {
@@ -199,49 +202,50 @@ function takePhoto() {
   });
 }
 
-// ========== SAVE ==========
-saveBtn?.addEventListener("click", () => {
+// ========== MODAL SAVE ==========
+modalSaveBtn?.addEventListener("click", () => {
+  if (!currentPhotoData) return;
+
+  // Download photo
   const link = document.createElement("a");
-  link.href = preview.src;
-  link.download = "snapshot.png";
+  link.href = currentPhotoData;
+  link.download = `photo_${Date.now()}.png`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 
+  // Add to hidden gallery
+  const img = document.createElement("img");
+  img.src = currentPhotoData;
+  gallery.appendChild(img);
+
+  // Update thumbnail box
+  updateGalleryThumbnail(currentPhotoData);
+  photoCount++;
+
+  // Close modal
+  photoModal.classList.remove("show");
   showFloating(saveConfirm);
-
-  const thumb = document.createElement("img");
-  thumb.src = preview.src;
-  gallery.appendChild(thumb);
-
-  preview.hidden = true;
-  saveBtn.disabled = true;
-  discardBtn.disabled = true;
+  currentPhotoData = null;
 });
 
-// ========== DISCARD ==========
-discardBtn?.addEventListener("click", () => {
-  preview.hidden = true;
-  saveBtn.disabled = true;
-  discardBtn.disabled = true;
+// ========== MODAL DISCARD ==========
+modalDiscardBtn?.addEventListener("click", () => {
+  photoModal.classList.remove("show");
   showFloating(discardConfirm);
+  currentPhotoData = null;
 });
+
+// ========== UPDATE GALLERY THUMBNAIL ==========
+function updateGalleryThumbnail(imageSrc) {
+  galleryThumbnail.innerHTML = `<img src="${imageSrc}" alt="Latest">`;
+}
 
 // ========== FLOATING NOTIFICATION ==========
 function showFloating(el) {
   el.style.display = "block";
   setTimeout(() => { el.style.display = "none"; }, 2000);
 }
-
-// ========== GALLERY THUMBNAIL CLICK ==========
-gallery?.addEventListener("click", (e) => {
-  if (e.target.tagName === "IMG") {
-    preview.src = e.target.src;
-    preview.hidden = false;
-    saveBtn.disabled = false;
-    discardBtn.disabled = false;
-  }
-});
 
 // ========== SCROLLABLE FILTERS ==========
 const slider = document.querySelector(".filter-container");

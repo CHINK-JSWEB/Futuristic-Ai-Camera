@@ -43,12 +43,16 @@
   <!-- Camera Preview Box (FULLSCREEN) -->
   <div class="camera-box">
     <video id="camera" autoplay playsinline></video>
-    <img id="preview" hidden />
     
     <!-- Capture Button with Image -->
     <button id="capture">
       <img src="media/capture.png" alt="Capture">
     </button>
+
+    <!-- Gallery Thumbnail Box (Left of Capture) -->
+    <div id="gallery-thumbnail-box">
+      <span id="gallery-empty-text">Gallery</span>
+    </div>
 
     <!-- Filters Scrollable -->
     <div class="filter-container filters">
@@ -94,14 +98,19 @@
     </div>
   </div>
 
-  <!-- Gallery Box -->
-  <div class="gallery-container">
-    <div id="gallery"></div>
-    <div class="action-buttons">
-      <button id="save">Save</button>
-      <button id="discard">Discard</button>
+  <!-- Photo Preview Pop-up Modal -->
+  <div id="photo-preview-modal">
+    <div class="modal-card">
+      <img id="modal-preview-image" src="" alt="Preview">
+      <div class="modal-actions">
+        <button id="modal-save-btn">💾 Save</button>
+        <button id="modal-discard-btn">🗑️ Discard</button>
+      </div>
     </div>
   </div>
+
+  <!-- Gallery Box (Hidden - for storage only) -->
+  <div id="gallery" style="display:none;"></div>
 
   <canvas id="canvas" hidden></canvas>
   <div id="save-confirmation">✅ Photo Saved!</div>
