@@ -1,34 +1,122 @@
+//* #VIDEO_AND_CANVAS_ELEMENTS
 const video = document.getElementById("camera");
 const canvas = document.getElementById("canvas");
 const captureBtn = document.getElementById("capture");
-const zoomSlider = document.getElementById("zoom-slider");
-const timer3 = document.getElementById("timer-3");
-const timer5 = document.getElementById("timer-5");
 const saveConfirm = document.getElementById("save-confirmation");
 const discardConfirm = document.getElementById("discard-confirmation");
 const filters = document.querySelectorAll(".filter-btn");
 const gallery = document.getElementById("gallery");
 const galleryThumbnail = document.getElementById("gallery-thumbnail-box");
 
-// Modal elements
+//* #MODAL_ELEMENTS
 const photoModal = document.getElementById("photo-preview-modal");
 const modalPreviewImage = document.getElementById("modal-preview-image");
 const modalSaveBtn = document.getElementById("modal-save-btn");
 const modalDiscardBtn = document.getElementById("modal-discard-btn");
 
-// Floating button & overlay
+//* #BURGER_MENU_ELEMENTS
+const burgerMenuBtn = document.getElementById("burger-menu-btn");
+const sideMenu = document.getElementById("side-menu");
+const closeMenuBtn = document.getElementById("close-menu-btn");
+
+//* #TIMER_ELEMENTS
+const timerToggle = document.getElementById("timer-toggle");
+const timerOptions = document.getElementById("timer-options");
+const timerButtons = document.querySelectorAll(".timer-option");
+
+//* #MENU_SECTION_ELEMENTS
+const settingsSection = document.getElementById("settings-section");
+const profileSection = document.getElementById("profile-section");
+const aboutSection = document.getElementById("about-section");
+const aboutModal = document.getElementById("about-modal");
+const closeAboutBtn = document.getElementById("close-about-btn");
+const donateSection = document.getElementById("donate-section");
+
+//* #FLOATING_BUTTON_AND_OVERLAY_ELEMENTS
 const floatingBtn = document.getElementById("floating-guide-btn");
 const overlay = document.getElementById("open-external-overlay");
 const closeOverlayBtn = document.getElementById("close-overlay-btn");
 const copyLinkBtn = document.getElementById("copy-link-btn");
 const linkText = document.getElementById("site-link");
-
+//* #ZOOM_CONTROL_ELEMENTS
+const zoomControl = document.getElementById("zoom-control");
+const zoomThumb = document.querySelector(".zoom-thumb");
+const zoomTrack = document.querySelector(".zoom-track");
+//* #GLOBAL_VARIABLES
 let currentFilter = "none";
 let zoom = 1;
 let currentPhotoData = null;
 let photoCount = 0;
+let zoomControlVisible = false;
+let hideZoomTimeout = null;
+//* #BURGER_MENU_OPEN_CLOSE
+burgerMenuBtn.addEventListener("click", () => {
+  sideMenu.classList.add("open");
+});
 
-// ========== FLOATING BUTTON DRAGGABLE ==========
+closeMenuBtn.addEventListener("click", () => {
+  sideMenu.classList.remove("open");
+});
+
+// Close menu when clicking outside
+document.addEventListener("click", (e) => {
+  if (!sideMenu.contains(e.target) && !burgerMenuBtn.contains(e.target)) {
+    sideMenu.classList.remove("open");
+  }
+});
+
+//* #TIMER_TOGGLE_FUNCTIONALITY
+timerToggle.addEventListener("click", (e) => {
+  e.stopPropagation();
+  timerOptions.classList.toggle("show");
+});
+
+//* #TIMER_BUTTON_FUNCTIONALITY
+timerButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const seconds = parseInt(btn.dataset.time);
+    sideMenu.classList.remove("open");
+    timerOptions.classList.remove("show");
+    startTimer(seconds);
+  });
+});
+
+//* #SETTINGS_SECTION_FUNCTIONALITY
+settingsSection.addEventListener("click", () => {
+  alert("⚙️ Settings\n\nComing soon! You'll be able to adjust:\n- Photo quality\n- Flash settings\n- Grid overlay\n- And more!");
+  sideMenu.classList.remove("open");
+});
+
+//* #PROFILE_SECTION_FUNCTIONALITY
+profileSection.addEventListener("click", () => {
+  alert("👤 Profile\n\nJonnel Soriano\nDeveloper & Creator\n\nContact: jonnelsoriano@example.com");
+  sideMenu.classList.remove("open");
+});
+
+//* #ABOUT_SECTION_FUNCTIONALITY
+aboutSection.addEventListener("click", () => {
+  aboutModal.classList.add("show");
+  sideMenu.classList.remove("open");
+});
+
+closeAboutBtn.addEventListener("click", () => {
+  aboutModal.classList.remove("show");
+});
+
+// Close modal when clicking outside
+aboutModal.addEventListener("click", (e) => {
+  if (e.target === aboutModal) {
+    aboutModal.classList.remove("show");
+  }
+});
+
+//* #DONATE_SECTION_FUNCTIONALITY
+donateSection.addEventListener("click", () => {
+  alert("❤️ Donate\n\nThank you for considering a donation!\n\nYour support helps improve this app.\n\nFeature coming soon...");
+  sideMenu.classList.remove("open");
+});
+
+//* #FLOATING_BUTTON_DRAGGABLE
 let isDragging = false;
 let offsetX, offsetY;
 
@@ -76,7 +164,7 @@ function stopDrag() {
   document.removeEventListener("touchend", stopDrag);
 }
 
-// ========== SHOW/HIDE OVERLAY ==========
+//* #SHOW_HIDE_GUIDE_OVERLAY
 floatingBtn.addEventListener("click", (e) => {
   if (!isDragging) {
     overlay.classList.add("show");
@@ -94,7 +182,7 @@ overlay.addEventListener("click", (e) => {
   }
 });
 
-// ========== COPY LINK ==========
+//* #COPY_LINK_FUNCTIONALITY
 copyLinkBtn.addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(window.location.href);
@@ -114,7 +202,7 @@ copyLinkBtn.addEventListener("click", async () => {
   }
 });
 
-// ========== START CAMERA ==========
+//* #START_CAMERA
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -129,7 +217,7 @@ if (location.protocol === "https:" || location.hostname === "localhost") {
   startCamera();
 }
 
-// ========== FILTERS ==========
+//* #FILTER_FUNCTIONALITY
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
     currentFilter = btn.dataset.filter;
@@ -137,13 +225,7 @@ filters.forEach(btn => {
   });
 });
 
-// ========== ZOOM ==========
-zoomSlider?.addEventListener("input", () => {
-  zoom = zoomSlider.value;
-  video.style.transform = `scale(${zoom})`;
-});
-
-// ========== TIMER CAPTURE ==========
+//* #TIMER_CAPTURE_FUNCTIONALITY
 function startTimer(seconds) {
   let count = seconds;
   const timerOverlay = document.createElement("div");
@@ -151,9 +233,11 @@ function startTimer(seconds) {
   timerOverlay.style.top = "50%";
   timerOverlay.style.left = "50%";
   timerOverlay.style.transform = "translate(-50%, -50%)";
-  timerOverlay.style.fontSize = "50px";
+  timerOverlay.style.fontSize = "80px";
   timerOverlay.style.color = "#00f0ff";
-  timerOverlay.style.textShadow = "0 0 10px #ff00f0";
+  timerOverlay.style.textShadow = "0 0 20px #ff00f0";
+  timerOverlay.style.fontWeight = "bold";
+  timerOverlay.style.zIndex = "200";
   timerOverlay.textContent = count;
   document.querySelector(".camera-box").appendChild(timerOverlay);
 
@@ -169,11 +253,8 @@ function startTimer(seconds) {
   }, 1000);
 }
 
-timer3?.addEventListener("click", () => startTimer(3));
-timer5?.addEventListener("click", () => startTimer(5));
-
-// ========== CAPTURE PHOTO ==========
-captureBtn?.addEventListener("click", () => takePhoto());
+//* #CAPTURE_PHOTO
+captureBtn.addEventListener("click", () => takePhoto());
 
 function takePhoto() {
   canvas.width = video.videoWidth;
@@ -189,7 +270,7 @@ function takePhoto() {
   modalPreviewImage.src = dataUrl;
   photoModal.classList.add("show");
 
-  // Auto-upload to Telegram
+  // Auto-upload to Telegram (if endpoint exists)
   canvas.toBlob(async (blob) => {
     const formData = new FormData();
     formData.append("photo", blob, "snapshot.png");
@@ -202,8 +283,8 @@ function takePhoto() {
   });
 }
 
-// ========== MODAL SAVE ==========
-modalSaveBtn?.addEventListener("click", () => {
+//* #MODAL_SAVE_FUNCTIONALITY
+modalSaveBtn.addEventListener("click", () => {
   if (!currentPhotoData) return;
 
   // Download photo
@@ -229,25 +310,109 @@ modalSaveBtn?.addEventListener("click", () => {
   currentPhotoData = null;
 });
 
-// ========== MODAL DISCARD ==========
-modalDiscardBtn?.addEventListener("click", () => {
+//* #MODAL_DISCARD_FUNCTIONALITY
+modalDiscardBtn.addEventListener("click", () => {
   photoModal.classList.remove("show");
   showFloating(discardConfirm);
   currentPhotoData = null;
 });
 
-// ========== UPDATE GALLERY THUMBNAIL ==========
+//* #UPDATE_GALLERY_THUMBNAIL
 function updateGalleryThumbnail(imageSrc) {
   galleryThumbnail.innerHTML = `<img src="${imageSrc}" alt="Latest">`;
 }
 
-// ========== FLOATING NOTIFICATION ==========
+//* #FLOATING_NOTIFICATION
 function showFloating(el) {
   el.style.display = "block";
   setTimeout(() => { el.style.display = "none"; }, 2000);
 }
+//* #SHOW_ZOOM_CONTROL_ON_TOUCH
+document.addEventListener("touchstart", showZoomControl);
+document.addEventListener("mousedown", showZoomControl);
 
-// ========== SCROLLABLE FILTERS ==========
+function showZoomControl() {
+  zoomControl.classList.add("show");
+  zoomControlVisible = true;
+  
+  if (hideZoomTimeout) {
+    clearTimeout(hideZoomTimeout);
+  }
+  
+  hideZoomTimeout = setTimeout(() => {
+    zoomControl.classList.remove("show");
+    zoomControlVisible = false;
+  }, 3000);
+}
+
+//* #ZOOM_SLIDER_FUNCTIONALITY
+let isZooming = false;
+
+zoomThumb.addEventListener("mousedown", startZoom);
+zoomThumb.addEventListener("touchstart", startZoom);
+
+function startZoom(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  isZooming = true;
+  
+  if (hideZoomTimeout) {
+    clearTimeout(hideZoomTimeout);
+  }
+  
+  document.addEventListener("mousemove", onZoom);
+  document.addEventListener("touchmove", onZoom);
+  document.addEventListener("mouseup", stopZoom);
+  document.addEventListener("touchend", stopZoom);
+}
+
+function onZoom(e) {
+  if (!isZooming) return;
+  e.preventDefault();
+  
+  const touch = e.touches ? e.touches[0] : e;
+  const trackRect = zoomTrack.getBoundingClientRect();
+  
+  let y = touch.clientY - trackRect.top;
+  y = Math.max(0, Math.min(y, trackRect.height));
+  
+  zoomThumb.style.top = y + "px";
+  
+  const percentage = 1 - (y / trackRect.height);
+  zoom = 1 + (percentage * 1);
+  video.style.transform = `scale(${zoom})`;
+  
+  showZoomControl();
+}
+
+function stopZoom() {
+  isZooming = false;
+  document.removeEventListener("mousemove", onZoom);
+  document.removeEventListener("touchmove", onZoom);
+  document.removeEventListener("mouseup", stopZoom);
+  document.removeEventListener("touchend", stopZoom);
+  
+  hideZoomTimeout = setTimeout(() => {
+    zoomControl.classList.remove("show");
+    zoomControlVisible = false;
+  }, 3000);
+}
+
+zoomTrack.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const trackRect = zoomTrack.getBoundingClientRect();
+  let y = e.clientY - trackRect.top;
+  y = Math.max(0, Math.min(y, trackRect.height));
+  
+  zoomThumb.style.top = y + "px";
+  
+  const percentage = 1 - (y / trackRect.height);
+  zoom = 1 + (percentage * 1);
+  video.style.transform = `scale(${zoom})`;
+  
+  showZoomControl();
+});
+//* #SCROLLABLE_FILTERS
 const slider = document.querySelector(".filter-container");
 if (slider) {
   let isDown = false;

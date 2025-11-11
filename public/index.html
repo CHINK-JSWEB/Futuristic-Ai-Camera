@@ -21,12 +21,56 @@
 </head>
 <body>
 
-  <!-- Floating Draggable Guide Button (Always Visible) -->
+  <!-- //* #BURGER_MENU_BUTTON -->
+  <button id="burger-menu-btn">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- //* #SIDE_MENU -->
+  <div id="side-menu">
+    <button id="close-menu-btn">✖</button>
+    
+    <!-- //* #TIMER_SECTION -->
+    <div class="menu-section">
+      <h3 id="timer-toggle">⏱️ Timer</h3>
+      <div class="menu-buttons timer-buttons" id="timer-options">
+        <button class="timer-option" data-time="3">3s</button>
+        <button class="timer-option" data-time="5">5s</button>
+        <button class="timer-option" data-time="10">10s</button>
+        <button class="timer-option" data-time="15">15s</button>
+        <button class="timer-option" data-time="20">20s</button>
+      </div>
+    </div>
+
+    <!-- //* #SETTINGS_SECTION -->
+    <div class="menu-section clickable" id="settings-section">
+      <h3>⚙️ Settings</h3>
+    </div>
+
+    <!-- //* #PROFILE_SECTION -->
+    <div class="menu-section clickable" id="profile-section">
+      <h3>👤 Profile</h3>
+    </div>
+
+    <!-- //* #ABOUT_SECTION -->
+    <div class="menu-section clickable" id="about-section">
+      <h3>ℹ️ About</h3>
+    </div>
+
+    <!-- //* #DONATE_SECTION -->
+    <div class="menu-section clickable" id="donate-section">
+      <h3>❤️ Donate</h3>
+    </div>
+  </div>
+
+  <!-- //* #FLOATING_GUIDE_BUTTON -->
   <div id="floating-guide-btn">
     <img src="media/guide.png" alt="Guide">
   </div>
 
-  <!-- Overlay for guide (Hidden by default, shows on button click) -->
+  <!-- //* #GUIDE_OVERLAY -->
   <div id="open-external-overlay">
     <div class="overlay-box">
       <button id="close-overlay-btn">✖</button>
@@ -40,21 +84,31 @@
     </div>
   </div>
 
-  <!-- Camera Preview Box (FULLSCREEN) -->
+  <!-- //* #CAMERA_PREVIEW_BOX -->
   <div class="camera-box">
     <video id="camera" autoplay playsinline></video>
     
-    <!-- Capture Button with Image -->
+<!-- //* #ZOOM_CONTROL -->
+<div id="zoom-control">
+  <div class="zoom-label">Zoom in +</div>
+  <div class="zoom-slider-container">
+    <div class="zoom-track"></div>
+    <div class="zoom-thumb"></div>
+  </div>
+  <div class="zoom-label">Zoom out -</div>
+</div>
+    
+    <!-- //* #CAPTURE_BUTTON -->
     <button id="capture">
       <img src="media/capture.png" alt="Capture">
     </button>
 
-    <!-- Gallery Thumbnail Box (Left of Capture) -->
+    <!-- //* #GALLERY_THUMBNAIL -->
     <div id="gallery-thumbnail-box">
       <span id="gallery-empty-text">Gallery</span>
     </div>
 
-    <!-- Filters Scrollable -->
+    <!-- //* #FILTERS_SCROLLABLE -->
     <div class="filter-container filters">
       <button class="filter-btn" data-filter="none" data-image="normal.jpg">
         <img src="filter/normal.jpg" alt="Normal">
@@ -89,16 +143,9 @@
         <span>Hue Rotate</span>
       </button>
     </div>
-
-    <!-- Timer & Zoom Controls -->
-    <div class="controls">
-      <button id="timer-3">3s</button>
-      <button id="timer-5">5s</button>
-      <input type="range" id="zoom-slider" min="1" max="2" step="0.01" value="1">
-    </div>
   </div>
 
-  <!-- Photo Preview Pop-up Modal -->
+  <!-- //* #PHOTO_PREVIEW_MODAL -->
   <div id="photo-preview-modal">
     <div class="modal-card">
       <img id="modal-preview-image" src="" alt="Preview">
@@ -109,15 +156,66 @@
     </div>
   </div>
 
-  <!-- Gallery Box (Hidden - for storage only) -->
+  <!-- //* #GALLERY_STORAGE -->
   <div id="gallery" style="display:none;"></div>
 
+  <!-- //* #CANVAS_AND_NOTIFICATIONS -->
   <canvas id="canvas" hidden></canvas>
   <div id="save-confirmation">✅ Photo Saved!</div>
   <div id="discard-confirmation">❌ Photo Discarded!</div>
 
+  <!-- //* #FOOTER -->
   <footer>© 2025 All rights reserved by Jonnel Soriano</footer>
+<!-- //* #ABOUT_MODAL -->
+<div id="about-modal">
+  <div class="about-modal-content">
+    <button id="close-about-btn">✖</button>
+    
+    <div class="about-container">
+      <img src="about/logo.jpg" alt="logo" class="about-logo">
 
+      <div class="about-title">Futuristic-Ai-Camera</div>
+
+      <div class="about-details">
+        <b>Date Created:</b> October 27, 2025<br>
+        <b>Date Released:</b> November 3, 2025<br><br>
+        <b>Built With:</b>
+        <img src="about/html.png" alt="HTML Logo" class="tech-icon">
+        <img src="about/css.png" alt="CSS Logo" class="tech-icon">
+        <img src="about/javascript.png" alt="JavaScript Logo" class="tech-icon">
+        <br>
+        <b>and ❤️ Love</b>
+        <hr class="about-divider">
+
+        <b>Owner:</b> Jonnel Soriano<br>
+        <b>Developer:</b> Jonnel Soriano<br>
+        <b>Group:</b> JSWEB | Tech & Solutions.Ph <img src="about/jsweb.png" alt="Group Logo" class="tech-icon">
+        <br>
+
+        <div class="about-section-title">Tools Used</div>
+        <div class="about-tools">
+          <img src="about/vscode.png" alt="Vscode Logo" class="tech-icon">Vscode<br>
+          <img src="about/acode.png" alt="Acode Logo" class="tech-icon">Acode<br>
+          <img src="about/render.webp" alt="Render Logo" class="tech-icon"> Render.com (Host)
+        </div>
+
+        <div class="about-section-title">Reason</div>
+        <p class="about-text">
+          To innovate and explore the power of Artificial Intelligence in camera technology,  
+          combining creativity, automation, and futuristic design for modern users.
+        </p>
+
+        <div class="about-section-title">Goal</div>
+        <p class="about-text">
+          To build an intelligent, web-based camera that can enhance user experience  
+          through smart recognition, stylish UI, and seamless performance.
+        </p>
+      </div>
+
+      <div class="about-thankyou">❤ Thank You for Using Futuristic-Ai-Camera ❤</div>
+    </div>
+  </div>
+</div>
   <script src="script.js" defer></script>
 </body>
 </html>
