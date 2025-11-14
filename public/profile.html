@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unlock Premium - Futuristic-Ai-Camera</title>
+  <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+  
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-toggle">
+    <input type="checkbox" id="darkmode-switch" checked>
+    <label for="darkmode-switch" class="toggle-label">
+      <span class="sun">☀️</span>
+      <span class="moon">🌙</span>
+    </label>
+  </div>
+
+  <!-- Main Container -->
+  <div class="profile-container">
+    
+    <!-- Premium Header -->
+    <div class="premium-header">
+      <img src="about/logo.jpg" alt="Futuristic-Ai-Camera Logo" class="premium-logo">
+      <h1 class="premium-title">UNLOCK PREMIUM 👑</h1>
+      <p class="premium-subtitle">Futuristic-Ai-Camera</p>
+    </div>
+
+    <!-- Login/Register Section -->
+    <div class="auth-section">
+      <h2 class="auth-title">LOGIN / REGISTER</h2>
+      
+      <!-- Social Login Buttons -->
+      <div class="social-buttons">
+        
+        <!-- Facebook -->
+        <button class="social-btn facebook-btn" onclick="loginWithFacebook()">
+          <img src="profile/facebook.png" alt="Facebook" class="social-icon">
+          <span>Continue with Facebook</span>
+        </button>
+        
+        <!-- Google -->
+        <button class="social-btn google-btn" onclick="loginWithGoogle()">
+          <img src="profile/google.png" alt="Google" class="social-icon">
+          <span>Continue with Google</span>
+        </button>
+        
+        <!-- Twitter/X -->
+        <button class="social-btn twitter-btn" onclick="loginWithTwitter()">
+          <img src="profile/x.jpg" alt="Twitter" class="social-icon">
+          <span>Continue with X</span>
+        </button>
+        
+      </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="benefits-section">
+      <h3 class="benefits-title">✨ Premium Benefits</h3>
+      <div class="benefits-grid">
+        <div class="benefit-item">
+          <span class="benefit-icon">🎨</span>
+          <span class="benefit-text">Remove Watermark</span>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">📹</span>
+          <span class="benefit-text">Up to 4K Quality</span>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">🎵</span>
+          <span class="benefit-text">Background Music</span>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">🚫</span>
+          <span class="benefit-text">No Ads</span>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">⚡</span>
+          <span class="benefit-text">Fast Processing</span>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">💾</span>
+          <span class="benefit-text">Unlimited Storage</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="index.html" class="back-btn">← Back to Camera</a>
+
+    <!-- Temporary Test Buttons (Remove after real login) -->
+    <div class="test-section">
+      <p style="color: #666; font-size: 12px; margin-top: 30px;">Testing Only:</p>
+      <button onclick="fakeLogin()" style="padding: 10px 20px; background: #00f0ff; border: none; border-radius: 8px; cursor: pointer; margin: 5px;">FAKE LOGIN</button>
+      <button onclick="logout()" style="padding: 10px 20px; background: #ff00f0; border: none; border-radius: 8px; cursor: pointer; margin: 5px;">LOGOUT</button>
+      <p id="login-status" style="color: #00f0ff; margin-top: 10px;"></p>
+    </div>
+
+  </div>
+
+  <script src="profile.js"></script>
+</body>
+</html>

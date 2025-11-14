@@ -1,0 +1,314 @@
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transition: background 0.3s ease;
+}
+
+body.light-mode {
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  color: #000;
+}
+
+/* Dark Mode Toggle */
+.dark-mode-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+#darkmode-switch {
+  display: none;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.1);
+  padding: 8px 15px;
+  border-radius: 30px;
+  cursor: pointer;
+  border: 2px solid #00f0ff;
+  transition: 0.3s;
+}
+
+.toggle-label:hover {
+  background: rgba(0,240,255,0.2);
+  box-shadow: 0 0 20px rgba(0,240,255,0.5);
+}
+
+.sun, .moon {
+  font-size: 20px;
+  transition: 0.3s;
+}
+
+#darkmode-switch:checked + .toggle-label .moon {
+  opacity: 1;
+}
+
+#darkmode-switch:checked + .toggle-label .sun {
+  opacity: 0.3;
+}
+
+#darkmode-switch:not(:checked) + .toggle-label .sun {
+  opacity: 1;
+}
+
+#darkmode-switch:not(:checked) + .toggle-label .moon {
+  opacity: 0.3;
+}
+
+body.light-mode .toggle-label {
+  background: rgba(0,0,0,0.1);
+  border-color: #333;
+}
+
+/* Main Container */
+.profile-container {
+  max-width: 500px;
+  width: 100%;
+  background: rgba(0,0,0,0.8);
+  border: 2px solid #00f0ff;
+  border-radius: 25px;
+  padding: 40px 30px;
+  box-shadow: 0 10px 50px rgba(0,240,255,0.3);
+  backdrop-filter: blur(10px);
+  text-align: center;
+}
+
+body.light-mode .profile-container {
+  background: rgba(255,255,255,0.9);
+  border-color: #333;
+  color: #000;
+}
+
+/* Premium Header */
+.premium-header {
+  margin-bottom: 30px;
+}
+
+.premium-logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid #00f0ff;
+  margin-bottom: 15px;
+  object-fit: cover;
+  box-shadow: 0 0 20px rgba(0,240,255,0.5);
+}
+
+.premium-title {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #00f0ff, #ff00f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 5px;
+}
+
+.premium-subtitle {
+  font-size: 16px;
+  color: #00f0ff;
+  font-weight: 600;
+}
+
+/* Auth Section */
+.auth-section {
+  margin-bottom: 30px;
+}
+
+.auth-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #00f0ff;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+body.light-mode .auth-title {
+  color: #333;
+}
+
+/* Social Buttons */
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 15px 20px;
+  border: 2px solid;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  background: rgba(255,255,255,0.05);
+}
+
+.social-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.social-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Facebook Button */
+.facebook-btn {
+  border-color: #1877f2;
+  color: #1877f2;
+}
+
+.facebook-btn:hover {
+  background: #1877f2;
+  color: #fff;
+}
+
+/* Google Button */
+.google-btn {
+  border-color: #fff;
+  color: #fff;
+}
+
+.google-btn:hover {
+  background: #fff;
+  color: #000;
+}
+
+body.light-mode .google-btn {
+  border-color: #333;
+  color: #333;
+}
+
+/* Twitter/X Button */
+.twitter-btn {
+  border-color: #000;
+  color: #fff;
+  background: #000;
+}
+
+.twitter-btn:hover {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+body.light-mode .twitter-btn {
+  border-color: #000;
+  background: #000;
+  color: #fff;
+}
+
+/* Benefits Section */
+.benefits-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(0,240,255,0.05);
+  border: 1px solid rgba(0,240,255,0.2);
+  border-radius: 15px;
+}
+
+.benefits-title {
+  font-size: 18px;
+  color: #ffcc00;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.benefit-item:hover {
+  background: rgba(0,240,255,0.1);
+  transform: scale(1.05);
+}
+
+body.light-mode .benefit-item {
+  background: rgba(0,0,0,0.05);
+}
+
+.benefit-icon {
+  font-size: 24px;
+}
+
+.benefit-text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Back Button */
+.back-btn {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 12px 30px;
+  background: transparent;
+  border: 2px solid #00f0ff;
+  color: #00f0ff;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.back-btn:hover {
+  background: #00f0ff;
+  color: #000;
+}
+
+/* Test Section */
+.test-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .profile-container {
+    padding: 30px 20px;
+  }
+  
+  .premium-title {
+    font-size: 24px;
+  }
+  
+  .benefits-grid {
+    grid-template-columns: 1fr;
+  }
+}

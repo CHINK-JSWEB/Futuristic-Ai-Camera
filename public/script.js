@@ -62,6 +62,43 @@ let photoCount = 0;
 let zoomControlVisible = false;
 let hideZoomTimeout = null;
 
+//* #CHECK_LOGIN_STATUS
+let isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
+let userName = localStorage.getItem("userName") || "Guest";
+
+//* #PREMIUM_ALERT_FUNCTION
+function showPremiumAlert(feature) {
+  let message = "";
+  
+  if (feature === "watermark") {
+    message = `🔒 PREMIUM FEATURE
+
+Remove Watermark is only available for registered users!
+
+✨ Benefits of Registration:
+✅ Remove Watermark
+✅ Up to 4K Quality (2160p)
+✅ Background Music Player
+✅ No Ads
+
+👉 Go to Profile → Login/Register to unlock!`;
+  } else if (feature === "quality") {
+    message = `🔒 PREMIUM FEATURE
+
+High Quality (1080p, 1440p, 2160p) is only available for registered users!
+
+✨ Benefits of Registration:
+✅ Remove Watermark
+✅ Up to 4K Quality (2160p)
+✅ Background Music Player
+✅ No Ads
+
+👉 Go to Profile → Login/Register to unlock!`;
+  }
+  
+  alert(message);
+}
+
 //* #SETTINGS_VALUES
 let settings = {
   notifications: true,
@@ -102,12 +139,37 @@ timerButtons.forEach(btn => {
   });
 });
 
-//* #SETTINGS_SECTION_FUNCTIONALITY
+//* #APPLY_RESTRICTIONS_ON_SETTINGS_OPEN
 settingsSection.addEventListener("click", () => {
   settingsModal.classList.add("show");
   sideMenu.classList.remove("open");
+  
+  // Apply restrictions for non-logged users
+  if (!isLoggedIn) {
+    // Disable watermark toggle
+    if (watermarkToggle) {
+      watermarkToggle.disabled = true;
+      watermarkToggle.checked = true;
+      
+      const watermarkItem = watermarkToggle.closest('.setting-item');
+      if (watermarkItem) {
+        watermarkItem.style.opacity = "0.6";
+        watermarkItem.style.cursor = "not-allowed";
+      }
+    }
+    
+    // Restrict camera quality
+    if (cameraQuality) {
+      Array.from(cameraQuality.options).forEach(option => {
+        if (parseInt(option.value) > 720) {
+          option.disabled = true;
+          option.textContent = option.textContent.replace(" 🔒 Premium", "") + " 🔒 Premium";
+        }
+      });
+      cameraQuality.value = "720";
+    }
+  }
 });
-
 closeSettingsBtn.addEventListener("click", () => {
   settingsModal.classList.remove("show");
 });
@@ -117,7 +179,26 @@ settingsModal.addEventListener("click", (e) => {
     settingsModal.classList.remove("show");
   }
 });
+//* #WATERMARK_TOGGLE_RESTRICTION
+if (watermarkToggle) {
+  watermarkToggle.parentElement.addEventListener("click", (e) => {
+    if (!isLoggedIn && watermarkToggle.disabled) {
+      e.preventDefault();
+      e.stopPropagation();
+      showPremiumAlert("watermark");
+    }
+  });
+}
 
+//* #QUALITY_CHANGE_RESTRICTION
+if (cameraQuality) {
+  cameraQuality.addEventListener("change", (e) => {
+    if (!isLoggedIn && parseInt(e.target.value) > 720) {
+      e.target.value = "720";
+      showPremiumAlert("quality");
+    }
+  });
+}
 aiPromptToggle.addEventListener("change", (e) => {
   if (e.target.checked) {
     alert("🤖 AI Prompt Feature\n\n⚠️ UNDER CONSTRUCTION ⚠️\n\nThis feature is coming soon!\nStay tuned for AI-powered camera enhancements.");
@@ -127,9 +208,24 @@ aiPromptToggle.addEventListener("change", (e) => {
 
 saveSettingsBtn.addEventListener("click", () => {
   settings.notifications = notificationToggle.checked;
-  settings.quality = cameraQuality.value;
+  
+  // Restrict quality if not logged in
+  if (!isLoggedIn) {
+    settings.quality = "720";
+    cameraQuality.value = "720";
+  } else {
+    settings.quality = cameraQuality.value;
+  }
+  
+  // Force watermark ON if not logged in
+  if (!isLoggedIn) {
+    settings.watermark = true;
+    watermarkToggle.checked = true;
+  } else {
+    settings.watermark = watermarkToggle.checked;
+  }
+  
   settings.timestamp = timestampToggle.checked;
-  settings.watermark = watermarkToggle.checked;
   settings.aiPrompt = aiPromptToggle.checked;
   
   const toast = document.createElement("div");
@@ -150,8 +246,8 @@ saveSettingsBtn.addEventListener("click", () => {
 
 //* #PROFILE_SECTION_FUNCTIONALITY
 profileSection.addEventListener("click", () => {
-  alert("👤 Profile\n\nJonnel Soriano\nDeveloper & Creator\n\nContact: jonnelsoriano@gmail.com");
   sideMenu.classList.remove("open");
+  window.location.href = "profile.html";
 });
 
 //* #ABOUT_SECTION_FUNCTIONALITY
@@ -430,32 +526,46 @@ function takePhoto() {
   ctx.filter = currentFilter || "none";
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  // Add watermark if enabled
-  if (settings.watermark) {
-    const logoImg = new Image();
-    logoImg.src = "about/logo.jpg";
-    logoImg.onload = () => {
-      const logoSize = 60;
-      ctx.drawImage(logoImg, 20, canvas.height - logoSize - 20, logoSize, logoSize);
-      
-      // Add text watermark
-      ctx.font = "bold 14px Arial";
-      ctx.fillStyle = "rgba(255,255,255,0.9)";
-      ctx.strokeStyle = "rgba(0,0,0,0.8)";
-      ctx.lineWidth = 3;
-      ctx.strokeText("Futuristic-Ai-Camera", 90, canvas.height - 35);
-      ctx.fillText("Futuristic-Ai-Camera", 90, canvas.height - 35);
-      
-      addTimestampAndFinalize(ctx);
-    };
-    logoImg.onerror = () => {
-      addTimestampAndFinalize(ctx);
-    };
-  } else {
+// Add watermark if enabled
+if (settings.watermark) {
+  const logoImg = new Image();
+  logoImg.src = "about/logo.jpg";
+  logoImg.onload = () => {
+    const logoSize = 60;
+    const x = 20;
+    const y = canvas.height - logoSize - 40; // Itaas para may space for text
+    
+    // DRAW CIRCULAR LOGO
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x + logoSize/2, y + logoSize/2, logoSize/2, 0, Math.PI * 2); // Pabilog
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(logoImg, x, y, logoSize, logoSize);
+    ctx.restore();
+    
+    // Add text watermark BELOW logo
+    ctx.font = "bold 12px Arial";
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.strokeStyle = "rgba(0,0,0,0.8)";
+    ctx.lineWidth = 3;
+    const textX = x + logoSize/2; // Center align sa logo
+    const textY = canvas.height - 15; // Baba
+    
+    // Measure text para i-center
+    const textWidth = ctx.measureText("Futuristic-Ai-Camera").width;
+    ctx.strokeText("Futuristic-Ai-Camera", textX - textWidth/2, textY);
+    ctx.fillText("Futuristic-Ai-Camera", textX - textWidth/2, textY);
+    
     addTimestampAndFinalize(ctx);
-  }
+  };
+  logoImg.onerror = () => {
+    addTimestampAndFinalize(ctx);
+  };
+} else {
+  addTimestampAndFinalize(ctx);
 }
-
+}
 function addTimestampAndFinalize(ctx) {
   // Add timestamp if enabled
   if (settings.timestamp) {

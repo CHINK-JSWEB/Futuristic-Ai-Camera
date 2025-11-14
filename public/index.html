@@ -189,14 +189,15 @@
         </label>
       </div>
       
-      <!-- Camera Quality -->
-      <div class="setting-item">
-        <div class="setting-label">
-          <div class="setting-icon-text">
-            <img src="settings/quality.jpg" alt="Quality" class="setting-icon">
-            <span>Camera Quality</span>
-          </div>
-        </div>
+<!-- Camera Quality -->
+<div class="setting-item" id="quality-setting-item">
+  <div class="setting-label">
+    <div class="setting-icon-text">
+      <img src="settings/quality.jpg" alt="Quality" class="setting-icon">
+      <span>Camera Quality</span>
+    </div>
+    <small id="quality-lock-msg" style="color: #ff00f0; display: none;">🔒 Premium: Up to 4K</small>
+  </div>
         <select id="camera-quality">
           <option value="720">720p HD</option>
           <option value="1080" selected>1080p Full HD</option>
@@ -220,15 +221,16 @@
         </label>
       </div>
       
-      <!-- Watermark -->
-      <div class="setting-item">
-        <div class="setting-label">
-          <div class="setting-icon-text">
-            <img src="settings/watermark.jpg" alt="Watermark" class="setting-icon">
-            <span>Watermark</span>
-          </div>
-          <small>Show Futuristic-Ai-Camera logo</small>
-        </div>
+<!-- Watermark -->
+<div class="setting-item">
+  <div class="setting-label">
+    <div class="setting-icon-text">
+      <img src="settings/watermark.jpg" alt="Watermark" class="setting-icon">
+      <span>Watermark</span>
+    </div>
+    <small>Show Futuristic-Ai-Camera logo</small>
+    <small id="watermark-lock-msg" style="color: #ff00f0; display: none;">🔒 Login to unlock</small>
+  </div>
         <label class="toggle-switch">
           <input type="checkbox" id="watermark-toggle" checked>
           <span class="toggle-slider"></span>
