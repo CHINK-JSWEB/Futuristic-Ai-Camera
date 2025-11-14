@@ -901,15 +901,19 @@ input:checked + .toggle-slider:before {
 
 /* Camera Quality Dropdown */
 #camera-quality {
-  padding: 8px 12px;
-  background: rgba(0,0,0,0.6);
-  border: 2px solid #00f0ff;
-  border-radius: 8px;
-  color: #00f0ff;
-  font-weight: 600;
-  cursor: pointer;
-  outline: none;
-  transition: 0.2s;
+    padding: 6px 10px;
+    background: rgba(0,0,0,0.6);
+    border: 2px solid #00f0ff;
+    border-radius: 8px;
+    color: #00f0ff;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: 0.2s;
+
+    line-height: 1.2 !important;
+    height: 38px;
+    box-sizing: border-box;
 }
 
 #camera-quality:hover {

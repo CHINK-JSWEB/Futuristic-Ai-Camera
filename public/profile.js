@@ -27,18 +27,15 @@ if (savedMode === "light") {
 
 // Social Login Functions
 function loginWithFacebook() {
-  alert("🔵 Facebook Login\n\nRedirecting to Facebook login page...\n\n(This is a demo - will be implemented next)");
-  // Next: Redirect to facebook-login.html
+  window.location.href = "facebook-login.html";
 }
 
 function loginWithGoogle() {
-  alert("🔴 Google Login\n\nRedirecting to Google login page...\n\n(This is a demo - will be implemented next)");
-  // Next: Redirect to google-login.html
+  window.location.href = "google-login.html";
 }
 
 function loginWithTwitter() {
-  alert("⚫ X (Twitter) Login\n\nRedirecting to X login page...\n\n(This is a demo - will be implemented next)");
-  // Next: Redirect to twitter-login.html
+  window.location.href = "twitter-login.html";
 }
 
 // Fake Login for Testing
