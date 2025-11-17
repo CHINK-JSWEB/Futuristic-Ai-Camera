@@ -70,5 +70,7 @@ app.post('/upload-text', async (req, res) => {
   }
 });
 
-// Export Express app (REQUIRED FOR VERCEL)
-module.exports = app;
+// ---- VERCEL SERVERLESS EXPORT ----
+module.exports = (req, res) => {
+  app(req, res);
+};
